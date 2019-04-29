@@ -26,22 +26,25 @@
         </div>
 
         <div id="Register" hidden>
-                <script src="http://jqueryvalidation.org/files/lib/jquery-1.11.1.js"></script>
-                <form id="registerForm">
-                    <label for="username">Username</label>
-                    <input type="text" placeholder="Enter username" required><br>
-                    <label for="password">Password</label>
-                    <input type="password" placeholder="Enter password" required><br>
-                    <label for="firstname">First name</label>
-                    <input type="text" placeholder="Enter your first name" required><br>
-                    <label for="lastname">Last name</label>
-                    <input type="lastname" placeholder="Enter your last name" required><br>
-                    <label for="email">Email</label>
-                    <input type="text" placeholder="name@domain.com" required><br>
-                    <label for="birthday">Birth day</label>
-                    <input type="date" placeholder="dd/mm/yyyy" required><br>
-                </form>
-            </div>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.js"></script>
+            <form id="registerForm">
+                <label for="username">Username</label>
+                <input type="text" placeholder="Enter username" name="username" required><br>
+                <label for="password">Password</label>
+                <input type="password" placeholder="Enter password" name="password" required><br>
+                <label for="firstname">First name</label>
+                <input type="text" placeholder="Enter your first name" name="firstname" required><br>
+                <label for="lastname">Last name</label>
+                <input type="lastname" placeholder="Enter your last name" name="lastname" required><br>
+                <label for="email">Email</label>
+                <input type="text" placeholder="name@domain.com" name="Email"><br>
+                <label for="birthday">Birth day</label>
+                <input type="date" placeholder="dd/mm/yyyy" name="birthday" required><br>
+                <button type="submit">Register</button>
+                <button type="reset">Reset</button>
+            </form>
+        </div>
 
         <div id="Login" hidden>
 
