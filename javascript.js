@@ -7,11 +7,15 @@ var start_time;
 var time_elapsed;
 var interval;
 
-var usersDataBase = {};
+var usersDataBase = { "a": sha256("a") };
+var controls = {"left":undefined, "right":undefined, "up":undefined, "down":undefined}
 
 var currentPage = "Welcome";
 var currentUser = "";
 
+document.getElementById("range").oninput = function(){
+    document.getElementById("range_number").innerHTML = this.value;
+}
 
 // alert(sha256("message"));
 
@@ -251,3 +255,9 @@ $("#registerForm").submit(function (e) {
         users.push(user);
     }
 });
+
+function getGameControl(){
+    event.srcElement.value = event.code;
+    controls[event.srcElement.id] = event.code;
+    event.preventDefault();
+}
