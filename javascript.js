@@ -241,13 +241,28 @@ $(document).ready(function () {
 
 $("#registerForm").submit(function (e) {
     if ($(this).valid()) {
-        alert("Successful registeration");
-        e.preventDefault();
         var username = document.getElementById("usernameID").value;
-        var password = document.getElementById("passwordID").value;
-        var user = {};
-        user.username = username;
-        user.password = password;
-        users.push(user);
+        if (usersDataBase[username] == undefined) {
+            var password = document.getElementById("passwordID").value;
+            usersDataBase[username] = sha256(password)
+            alert("Successful registeration");
+            e.preventDefault();
+        }
     }
 });
+
+function checkLogin(){
+    var username = document.getElementById("usernameLoginID").value
+    currentUser = username
+    var password = document.getElementById("passordLoginID").value
+    if(usersDataBase[username]===sha256(password)){
+        var loginForm = document.getElementById("loginForm")
+        loginForm.hidden = true
+        var settings = document.getElementById("settings")
+        settings.hidden = false
+    }
+    else{
+        alert("username or password not exists. Try again")
+    }
+
+}
