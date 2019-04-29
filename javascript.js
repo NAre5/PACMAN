@@ -7,9 +7,15 @@ var start_time;
 var time_elapsed;
 var interval;
 
-var currentPage = "Welcome";
+var usersDataBase = {};
 
-Start();
+var currentPage = "Welcome";
+var currentUser = "";
+
+
+// alert(sha256("message"));
+
+// Start();
 
 function Start() {
     board = new Array();
