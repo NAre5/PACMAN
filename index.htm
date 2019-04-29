@@ -6,8 +6,6 @@
 </head>
 
 <body>
-    <!-- <script type="text/javascript" src="javascript.js">
-    </script> -->
     <header>
         PACWOMAN
         <img id="icon" src="icon.png">
@@ -15,21 +13,20 @@
     </header>
 
     <nav class="menu">
-        <button onclick="open()" value="Welcome">Welcome</button>
-        <button onclick="open()" value="Register">Register</button>
-        <button onclick="open()" value="Login">Login</button>
-        <button onclick="open()" value="About">About</button>
-        <button onclick="open()" value="About">ASD</button>
+        <button onclick="open_tab()" value="Welcome">Welcome</button>
+        <button onclick="open_tab()" value="Register">Register</button>
+        <button onclick="open_tab()" value="Login">Login</button>
+        <button onclick="open_tab()" value="About">About</button>
     </nav>
 
     <section>
         <div id="Welcome">
-            <button onclick="open()" value="Register">Register</button>
-            <button onclick="open()" value="Login">Login</button>
+            <button onclick="open_tab()" value="Register">Register</button>
+            <button onclick="open_tab()" value="Login">Login</button>
         </div>
 
         <div id="Register" hidden>
-            
+
         </div>
 
         <div id="Login" hidden>
@@ -46,16 +43,17 @@
         if you want to email someone than: atuda_ac@idf.gov.il
     </footer>
 
-    <!-- SCORE:
+    SCORE:
     <input id="lblScore" type="text" />
     <br />
     TIME:
     <input id="lblTime" type="text" />
     <br />
-    <canvas id="canvas" height="600" width="600"></canvas> -->
+    <canvas id="canvas" height="600" width="600"></canvas>
 
 
-
+    <script src="javascript.js">
+    </script>
 </body>
 
 </html>

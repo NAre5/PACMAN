@@ -1,4 +1,4 @@
-var context = canvas.getContext("2d");
+var context = canvas.getContext('2d');
 var shape = new Object();
 var board;
 var score;
@@ -7,7 +7,7 @@ var start_time;
 var time_elapsed;
 var interval;
 
-var currentPage;
+var currentPage = "Welcome";
 
 Start();
 
@@ -161,4 +161,11 @@ function UpdatePosition() {
     } else {
         Draw();
     }
+}
+
+
+function open_tab() {
+    document.getElementById(currentPage).hidden = true;
+    currentPage = event.srcElement.value
+    document.getElementById(currentPage).hidden = false;
 }
