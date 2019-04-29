@@ -176,38 +176,38 @@ function open_tab() {
     document.getElementById(currentPage).hidden = false;
 }
 
-$(document).ready(function(){
+$(document).ready(function () {
     $("#registerForm").validate({
         rules: {
-            username:{
+            username: {
                 required: true
             },
-            password:{
+            password: {
                 required: true,
                 minlength: 8,
-                regexp: '^[a-zA-Z0-9]$'
+                regexp: '^[a-zA-Z0-9]*$'
             },
-            firstname:{
+            firstname: {
                 required: true,
-                regexp: '^[a-zA-Z]$'
+                regexp: '^[a-zA-Z]*$'
             },
-            lastname:{
+            lastname: {
                 required: true,
-                regexp: '^[a-zA-Z]$'
+                regexp: '^[a-zA-Z]*$'
             },
-            email:{
+            email: {
                 required: true,
                 email: true
             },
-            birthday:{
+            birthday: {
                 required: true,
             }
         },
-        massages:{
+        massages: {
             username: {
                 required: "This field cannot be empty",
             },
-            psw: {
+            password: {
                 required: "This field cannot be empty",
                 minlength: "password must be at least 8 characters",
                 regexp: "password must contain only numbers and letters",
@@ -220,8 +220,11 @@ $(document).ready(function(){
                 required: "This field cannot be empty",
                 regexp: "last name must contains only letters",
             },
-            email: "Please enter a valid email address",
-            bday: {
+            email: {
+                required: "This field cannot be empty",
+                email: "Please enter a valid email address"
+            },
+            birthday: {
                 required: "This field cannot be empty",
             }
         }
@@ -236,8 +239,15 @@ $(document).ready(function(){
     );
 });
 
-$("#registerForm").submit(function (e){
-    if($(this).valid()){
-        alert("success");
+$("#registerForm").submit(function (e) {
+    if ($(this).valid()) {
+        alert("Successful registeration");
+        e.preventDefault();
+        var username = document.getElementById("usernameID").value;
+        var password = document.getElementById("passwordID").value;
+        var user = {};
+        user.username = username;
+        user.password = password;
+        users.push(user);
     }
 });

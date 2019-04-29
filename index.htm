@@ -20,24 +20,41 @@
     </nav>
 
     <section>
-        <div id="Welcome"><button onclick="open_tab()" value="Register">Register</button><button onclick="open_tab()"
-                value="Login">Login</button></div>
+        <div id="Welcome">
+            <button onclick="open_tab()" value="Register">Register</button>
+            <button onclick="open_tab()" value="Login">Login</button>
+        </div>
+
         <div id="Register" hidden>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.js"></script>
-            <form id="registerForm"><label for="username">Username</label><input type="text"
-                    placeholder="Enter username" name="username" required><br><label
-                    for="password">Password</label><input type="password" placeholder="Enter password" name="password"
-                    required><br><label for="firstname">First name</label><input type="text"
-                    placeholder="Enter your first name" name="firstname" required><br><label for="lastname">Last
-                    name</label><input type="lastname" placeholder="Enter your last name" name="lastname"
-                    required><br><label for="email">Email</label><input type="text" placeholder="name@domain.com"
-                    name="Email"><br><label for="birthday">Birth day</label><input type="date" placeholder="dd/mm/yyyy"
-                    name="birthday" required><br><button type="submit">Register</button><button
-                    type="reset">Reset</button></form>
+            <form id="registerForm">
+                <div>
+                    <label for="username">Username</label>
+                    <input type="text" placeholder="Enter username" name="username" id="usernameID" required><br>
+                    <label for="password">Password</label>
+                    <input type="password" placeholder="Enter password" name="password" id="passwordID" required><br>
+                    <label for="firstname">First name</label>
+                    <input type="text" placeholder="Enter your first name" name="firstname" required><br>
+                    <label for="lastname">Last name</label>
+                    <input type="text" placeholder="Enter your last name" name="lastname" required><br>
+                    <label for="email">Email</label>
+                    <input type="text" placeholder="name@domain.com" name="email" required><br>
+                    <label for="birthday">Birth day</label>
+                    <input type="date" placeholder="dd/mm/yyyy" name="birthday" required><br>
+                    <button type="submit">Register</button>
+                    <button type="reset">Reset</button>
+                </div>
+            </form>
         </div>
-        <div id="Login" hidden></div>
-        <div id="About" hidden></div>
+
+        <div id="Login" hidden>
+
+        </div>
+
+        <div id="About" hidden>
+
+        </div>
     </section>
 
     <footer>
