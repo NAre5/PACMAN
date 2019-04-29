@@ -179,18 +179,28 @@ function open_tab() {
 $(document).ready(function(){
     $("#registerForm").validate({
         rules: {
+            username:{
+                required: true
+            },
             password:{
+                required: true,
                 minlength: 8,
                 regexp: '^[a-zA-Z0-9]$'
             },
             firstname:{
+                required: true,
                 regexp: '^[a-zA-Z]$'
             },
             lastname:{
+                required: true,
                 regexp: '^[a-zA-Z]$'
             },
             email:{
+                required: true,
                 email: true
+            },
+            birthday:{
+                required: true,
             }
         },
         massages:{
@@ -212,8 +222,22 @@ $(document).ready(function(){
             },
             email: "Please enter a valid email address",
             bday: {
-                required: "This field cannot be null",
+                required: "This field cannot be empty",
             }
         }
-    })
-})
+    });
+    jQuery.validator.addMethod(
+        'regexp',
+        function (value, element, regexp) {
+            var re = new RegExp(regexp);
+            return this.optional(element) || re.test(value);
+        },
+        "Please check your input."
+    );
+});
+
+$("#registerForm").submit(function (e){
+    if($(this).valid()){
+        alert("success");
+    }
+});
