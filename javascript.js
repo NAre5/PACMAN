@@ -169,3 +169,45 @@ function open_tab() {
     currentPage = event.srcElement.value
     document.getElementById(currentPage).hidden = false;
 }
+
+$(document).ready(function(){
+    $("#registerForm").validate({
+        rules: {
+            password:{
+                minlength: 8,
+                regexp: '^[a-zA-Z0-9]$'
+            },
+            firstname:{
+                regexp: '^[a-zA-Z]$'
+            },
+            lastname:{
+                regexp: '^[a-zA-Z]$'
+            },
+            email:{
+                email: true
+            }
+        },
+        massages:{
+            username: {
+                required: "This field cannot be empty",
+            },
+            psw: {
+                required: "This field cannot be empty",
+                minlength: "password must be at least 8 characters",
+                regexp: "password must contain only numbers and letters",
+            },
+            firstname: {
+                required: "This field cannot be empty",
+                regexp: "first name must contains only letters",
+            },
+            lastname: {
+                required: "This field cannot be empty",
+                regexp: "last name must contains only letters",
+            },
+            email: "Please enter a valid email address",
+            bday: {
+                required: "This field cannot be null",
+            }
+        }
+    })
+})
