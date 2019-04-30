@@ -57,12 +57,97 @@
                     <input type="password" id="passordLoginID" placeholder="Enter password" required>
                     <button type="button" onclick="checkLogin()">Login</button>
                 </form>
-            </div>
-        </div>
+                <div id="Login">
+                    <div id="loginForm">
 
-        <div id="About" hidden>
+                    </div>
+                    <div id="settings">
+                        <table>
+                            <tr>
+                                <td>command</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>left</td>
+                                <td><input type="text" id="left" class="controls" onkeydown="getGameControl()" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>right</td>
+                                <td><input type="text" id="right" class="controls" onkeydown="getGameControl()"
+                                        required></td>
+                            </tr>
+                            <tr>
+                                <td>up</td>
+                                <td><input type="text" id="up" class="controls" onkeydown="getGameControl()" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>down</td>
+                                <td><input type="text" id="down" class="controls" onkeydown="getGameControl()" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>number of balls<br> in the game</td>
+                                <td><input value="50" type="range" min="50" max="90" id="range" required></td>
+                                <td>
+                                    <p id="range_number">50</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    pick color for:
+                                </td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td>5 points ball</td>
+                                            <td><input type="color" id="5points" class="color" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>15 points ball</td>
+                                            <td><input type="color" id="15points" class="color" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>25 points ball</td>
+                                            <td><input type="color" id="25points" class="color" required></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>maximal time for game<br>(in seconds)</td>
+                                <td><input type="number" min="60" id="gameTime" required></td>
+                            </tr>
+                            <tr>
+                                <td>number of monsters in the game</td>
+                                <td>
+                                    <select id="num_of_monsters" required>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </td>
 
-        </div>
+                            </tr>
+                        </table>
+                        <button type="button" onclick="set()">Set</button>
+                        <button type="button" onclick="setRandom()">random settings</button>
+                    </div>
+                    <div id="game" hidden>
+                        SCORE:
+                        <input id="lblScore" type="text" />
+                        <br />
+                        TIME:
+                        <input id="lblTime" type="text" />
+                        <br />
+                        <canvas id="canvas" height="600" width="600"></canvas>
+                    </div>
+                </div>
+
+                <div id="About" hidden>
+
+                </div>
     </section>
 
     <footer>
@@ -70,13 +155,7 @@
         if you want to email someone than: atuda_ac@idf.gov.il
     </footer>
 
-    SCORE:
-    <input id="lblScore" type="text" />
-    <br />
-    TIME:
-    <input id="lblTime" type="text" />
-    <br />
-    <canvas id="canvas" height="600" width="600"></canvas>
+
 
 
     <script src="sha256.min.js"></script>
