@@ -514,9 +514,6 @@ function resetSettings(){
     document.getElementById("num_of_ghosts").value = undefined;
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 function guest_basic(){
     setRandom();
     setSetings();
