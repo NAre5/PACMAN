@@ -60,84 +60,84 @@
                     <button type="button" onclick="checkLogin()">Login</button>
                 </form>
             </div>
-
             <div id="settings" hidden>
-                <table>
-                    <tr>
-                        <td>command</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>left</td>
-                        <td><input type="text" id="left" class="controls" onkeydown="getGameControl()"
-                                placeholder="press on your keyboard to set left" required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>right</td>
-                        <td><input type="text" id="right" class="controls" onkeydown="getGameControl()"
-                                placeholder="press on your keyboard to set right" required></td>
-                    </tr>
-                    <tr>
-                        <td>up</td>
-                        <td><input type="text" id="up" class="controls" onkeydown="getGameControl()"
-                                placeholder="press on your keyboard to set up" required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>down</td>
-                        <td><input type="text" id="down" class="controls" onkeydown="getGameControl()"
-                                placeholder="press on your keyboard to set down" required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>number of balls<br> in the game</td>
-                        <td><input value="50" type="range" min="50" max="90" id="range" required></td>
-                        <td>
-                            <p id="range_number">50</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            pick color for:
-                        </td>
-                        <td>
-                            <table>
-                                <tr>
-                                    <td>5 points ball</td>
-                                    <td><input type="color" id="5points" class="color" required></td>
-                                </tr>
-                                <tr>
-                                    <td>15 points ball</td>
-                                    <td><input type="color" id="15points" class="color" required></td>
-                                </tr>
-                                <tr>
-                                    <td>25 points ball</td>
-                                    <td><input type="color" id="25points" class="color" required></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>maximal time for game<br>(in seconds)</td>
-                        <td><input type="number" min="60" id="gameTime" required></td>
-                    </tr>
-                    <tr>
-                        <td>number of ghosts in the game</td>
-                        <td>
-                            <select id="num_of_ghosts" required>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                            </select>
-                        </td>
+                <form id="settingsForm">
+                    <table>
+                        <tr>
+                            <td>command</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>left</td>
+                            <td><input type="text" id="left" class="controls" onkeydown="getGameControl()"
+                                    placeholder="press on your keyboard to set left" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>right</td>
+                            <td><input type="text" id="right" class="controls" onkeydown="getGameControl()"
+                                    placeholder="press on your keyboard to set right" required></td>
+                        </tr>
+                        <tr>
+                            <td>up</td>
+                            <td><input type="text" id="up" class="controls" onkeydown="getGameControl()"
+                                    placeholder="press on your keyboard to set up" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>down</td>
+                            <td><input type="text" id="down" class="controls" onkeydown="getGameControl()"
+                                    placeholder="press on your keyboard to set down" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>number of balls<br> in the game</td>
+                            <td><input value="50" type="range" min="50" max="90" id="range" required></td>
+                            <td>
+                                <p id="range_number">50</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                pick color for:
+                            </td>
+                            <td>
+                                <table>
+                                    <tr>
+                                        <td>5 points ball</td>
+                                        <td><input type="color" id="5points" class="color" required></td>
+                                    </tr>
+                                    <tr>
+                                        <td>15 points ball</td>
+                                        <td><input type="color" id="15points" class="color" required></td>
+                                    </tr>
+                                    <tr>
+                                        <td>25 points ball</td>
+                                        <td><input type="color" id="25points" class="color" required></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>maximal time for game<br>(in seconds)</td>
+                            <td><input type="number" min="60" id="gameTime" required></td>
+                        </tr>
+                        <tr>
+                            <td>number of ghosts in the game</td>
+                            <td>
+                                <select id="num_of_ghosts" required>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </td>
 
-                    </tr>
-                </table>
-                <button type="button" onclick="setSetings()">Set</button>
-                <button type="button" onclick="setRandom()">random settings</button>
-                <button type="reset" onclick="resetSettings()">Reset</button>
-
+                        </tr>
+                    </table>
+                    <button type="submit">Set</button>
+                    <button type="button" onclick="setRandom()">random settings</button>
+                    <button type="reset" onclick="resetSettings()">Reset</button>
+                </form>
             </div>
             <div id="game" hidden>
                 SCORE:
@@ -147,11 +147,12 @@
                 <input id="lblTime" type="text" />
                 <br />
                 <canvas id="canvas" height="600" width="600"></canvas>
+                <button type="button" onclick="startNewGame()">New Game</button>
             </div>
         </div>
 
         <div id="About" hidden>
-                
+
         </div>
     </section>
 
