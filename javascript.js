@@ -25,8 +25,10 @@ function Start() {
     board = new Array();
     score = 0;
     pac_color = "yellow";
+    var num5Point = Math.round(0.6*food_remain);
+    var num15Point = Math.round(0.3*food_remain);
+    var num25point = food_remain - num5Point - num15Point;
     var cnt = 100;
-    var food_remain = 50;
     var pacman_remain = 1;
     start_time = new Date();
     for (var i = 0; i < 10; i++) {
@@ -38,8 +40,27 @@ function Start() {
             } else {
                 var randomNum = Math.random();
                 if (randomNum <= 1.0 * food_remain / cnt) {
+                    var randomNum2 = Math.random();
+                    var sum = num5Point+num15Point+num25point;
+                    var percent5 = num5Point/sum;
+                    var precent15 = num15Point/sum;
+                    var precent25 = num25Point/sum;
+                    if(randomNum2<percent5)
+                    {
+                        num5Point--;
+                        board[i][j]=5;
+                    }
+                    else if(randomNum2<precent15+percent5)
+                    {
+                        num15Point--;
+                        board[i][j]=15;
+                    }
+                    else if(randomNum2<precent25+precent15+percent5)
+                    {
+                        num25Point--;
+                        board[i][j]=25;
+                    }
                     food_remain--;
-                    board[i][j] = 1;
                 } else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
                     shape.i = i;
                     shape.j = j;
@@ -82,16 +103,16 @@ function findRandomEmptyCell(board) {
  * @return {number}
  */
 function GetKeyPressed() {
-    if (keysDown['ArrowUp']) {
+    if (keysDown[controls['up']]) {
         return 1;
     }
-    if (keysDown['ArrowDown']) {
+    if (keysDown[controls['down']]) {
         return 2;
     }
-    if (keysDown['ArrowLeft']) {
+    if (keysDown[controls['left']]) {
         return 3;
     }
-    if (keysDown['ArrowRight']) {
+    if (keysDown[controls['right']]) {
         return 4;
     }
 }
