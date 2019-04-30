@@ -11,17 +11,19 @@ var direction = "right"
 
 var max_balls = 90;
 var min_balls = 50;
-var max_monsters = 3;
-var min_monsters = 1;
+var max_ghosts = 3;
+var min_ghosts = 1;
+var eated = false;
 
 var color5points;
 var color15points;
 var color25points;
-var monsterNum;
+var ghostsNum;
 
 
 var usersDataBase = { "a": sha256("a") };
-var controls = { "left": undefined, "right": undefined, "up": undefined, "down": undefined }
+var controls = { "left": undefined, "right": undefined, "up": undefined, "down": undefined };
+// var controls = {};
 
 var currentPage = "Welcome";
 var currentUser = "";
@@ -114,20 +116,24 @@ function findRandomEmptyCell(board) {
  */
 function GetKeyPressed() {
     if (keysDown[controls['up']]) {
+        direction="up";
         return 1;
     }
     if (keysDown[controls['down']]) {
+        direction="down";
         return 2;
     }
     if (keysDown[controls['left']]) {
+        direction="left";
         return 3;
     }
     if (keysDown[controls['right']]) {
+        direction="right";
         return 4;
     }
 }
 
-function Draw() {
+async function Draw() {
     context.clearRect(0, 0, canvas.width, canvas.height); //clean board
     lblScore.value = score;
     lblTime.value = time_elapsed;
@@ -149,6 +155,22 @@ function Draw() {
                         context.arc(center.x + 5, center.y - 15, 5, 0, 2 * Math.PI); // circle
                         context.fillStyle = "black"; //color
                         context.fill();
+                        if(eated){
+                            await sleep(200);
+                            context.beginPath();
+                            context.arc(center.x, center.y, 30, 0.075 * Math.PI, 0.925 * Math.PI); // half circle
+                            context.lineTo(center.x, center.y);
+                            context.fillStyle = pac_color; //color
+                            context.fill();
+                            await sleep(200);
+                            context.beginPath();
+                            context.arc(center.x, center.y, 30, 0 * Math.PI, 2 * Math.PI); // half circle
+                            context.lineTo(center.x, center.y);
+                            context.fillStyle = pac_color; //color
+                            context.fill();
+                            await sleep(200);
+                            eated = false;
+                        }
                         break;
                     case "left":
                         context.beginPath();
@@ -160,6 +182,22 @@ function Draw() {
                         context.arc(center.x, center.y - 15, 5, 0, 2 * Math.PI); // circle
                         context.fillStyle = "black"; //color
                         context.fill();
+                        if(eated){
+                            await sleep(200);
+                            context.beginPath();
+                            context.arc(center.x, center.y, 30, 1.075*Math.PI, 0.975 * Math.PI); // half circle
+                            context.lineTo(center.x, center.y);
+                            context.fillStyle = pac_color; //color
+                            context.fill();
+                            await sleep(200);
+                            context.beginPath();
+                            context.arc(center.x, center.y, 30, 1.0*Math.PI, 1.0 * Math.PI); // half circle
+                            context.lineTo(center.x, center.y);
+                            context.fillStyle = pac_color; //color
+                            context.fill();
+                            await sleep(200);
+                            eated = false;
+                        }
                         break;
                     case "down":
                         context.beginPath();
@@ -238,12 +276,16 @@ function UpdatePosition() {
     }
     if (board[shape.i][shape.j] === 5) {
         score+=5;
+        // eated = true;
     }
     if (board[shape.i][shape.j] === 15) {
         score+=15;
+        // eated = true;
+
     }
     if (board[shape.i][shape.j] === 25) {
         score+=25;
+        // eated = true;
     }
     board[shape.i][shape.j] = 2;
     var currentTime = new Date();
@@ -253,7 +295,7 @@ function UpdatePosition() {
     }
     if (score === 50) {
         Draw();
-        window.clearInterval(interval);
+        stopGame();
         window.alert("Game completed");
     } else {
         Draw();
@@ -347,10 +389,11 @@ function checkLogin() {
     currentUser = username
     var password = document.getElementById("passordLoginID").value
     if (usersDataBase[username] === sha256(password)) {
-        var loginForm = document.getElementById("loginForm")
-        loginForm.hidden = true
-        var settings = document.getElementById("settings")
-        settings.hidden = false
+        var loginForm = document.getElementById("loginForm");
+        loginForm.hidden = true;
+        var settings = document.getElementById("settings");
+        settings.hidden = false;
+        currentUser = username;
     }
     else {
         alert("username or password not exists. Try again")
@@ -382,7 +425,7 @@ function setRandom() {
 
     document.getElementById("gameTime").value = Math.floor(Math.random() * (600000 - 60) + 60);
 
-    document.getElementById("num_of_monsters").value = Math.floor(Math.random() * (max_monsters + 1 - min_monsters) + min_monsters);
+    document.getElementById("num_of_ghosts").value = Math.floor(Math.random() * (max_ghosts + 1 - min_ghosts) + min_ghosts);
 }
 
 function set() {
@@ -412,8 +455,46 @@ function set() {
     color5points = document.getElementById("5points").value
     color15points = document.getElementById("15points").value
     color25points = document.getElementById("25points").value
-    monsterNum = document.getElementById("num_of_monsters").value
+    ghostsNum = document.getElementById("num_of_ghosts").value
     document.getElementById("settings").hidden = true;
     document.getElementById("game").hidden = false;
     Start();
+}
+
+function logout(){
+    currentUser="";
+    var loginForm = document.getElementById("loginForm");
+    loginForm.hidden = false;
+    var settings = document.getElementById("game");
+    settings.hidden = true;
+    resetSettings();
+
+}
+
+function stopGame(){
+    window.clearInterval(interval);
+    //audio.pause();
+}
+
+function resetSettings(){
+    controls["up"] = undefined;
+    controls["right"] = undefined;
+    controls["down"] = undefined;
+    controls["left"] = undefined;
+    document.getElementById("up").value = "";
+    document.getElementById("right").value = "";
+    document.getElementById("down").value = "";
+    document.getElementById("left").value = "";
+
+    food_remain = undefined;
+    document.getElementById("range").value = 50;
+    document.getElementById("range_number").innerHTML = 50;
+
+    document.getElementById("5points").value = "#000000";
+    document.getElementById("15points").value = "#000000";
+    document.getElementById("25points").value = "#000000";
+
+    document.getElementById("gameTime").value = "";
+
+    document.getElementById("num_of_ghosts").value = undefined;
 }
