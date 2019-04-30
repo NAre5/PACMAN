@@ -133,7 +133,7 @@ function GetKeyPressed() {
     }
 }
 
-async function Draw() {
+function Draw() {
     context.clearRect(0, 0, canvas.width, canvas.height); //clean board
     lblScore.value = score;
     lblTime.value = time_elapsed;
@@ -142,87 +142,54 @@ async function Draw() {
             var center = new Object();
             center.x = i * 60 + 30;
             center.y = j * 60 + 30;
+            var startAngel; 
+            var stopAngel;
+            var radius;
+            var centerX;
+            var centerY;
+            var drawPackman = false;
             if (board[i][j] === 2) {
+                drawPackman = true;
                 switch(direction)
                 {
                     case "right":
-                        context.beginPath();
-                        context.arc(center.x, center.y, 30, 0.15 * Math.PI, 1.85 * Math.PI); // half circle
-                        context.lineTo(center.x, center.y);
-                        context.fillStyle = pac_color; //color
-                        context.fill();
-                        context.beginPath();
-                        context.arc(center.x + 5, center.y - 15, 5, 0, 2 * Math.PI); // circle
-                        context.fillStyle = "black"; //color
-                        context.fill();
-                        if(eated){
-                            await sleep(200);
-                            context.beginPath();
-                            context.arc(center.x, center.y, 30, 0.075 * Math.PI, 0.925 * Math.PI); // half circle
-                            context.lineTo(center.x, center.y);
-                            context.fillStyle = pac_color; //color
-                            context.fill();
-                            await sleep(200);
-                            context.beginPath();
-                            context.arc(center.x, center.y, 30, 0 * Math.PI, 2 * Math.PI); // half circle
-                            context.lineTo(center.x, center.y);
-                            context.fillStyle = pac_color; //color
-                            context.fill();
-                            await sleep(200);
-                            eated = false;
-                        }
+                        startAngel=0.15 * Math.PI
+                        stopAngel=1.85 * Math.PI
+                        radius=30 
+                        centerX = center.x +5
+                        centerY = center.y -15
                         break;
                     case "left":
-                        context.beginPath();
-                        context.arc(center.x, center.y, 30, 1.15*Math.PI, 0.85 * Math.PI); // half circle
-                        context.lineTo(center.x, center.y);
-                        context.fillStyle = pac_color; //color
-                        context.fill();
-                        context.beginPath();
-                        context.arc(center.x, center.y - 15, 5, 0, 2 * Math.PI); // circle
-                        context.fillStyle = "black"; //color
-                        context.fill();
-                        if(eated){
-                            await sleep(200);
-                            context.beginPath();
-                            context.arc(center.x, center.y, 30, 1.075*Math.PI, 0.975 * Math.PI); // half circle
-                            context.lineTo(center.x, center.y);
-                            context.fillStyle = pac_color; //color
-                            context.fill();
-                            await sleep(200);
-                            context.beginPath();
-                            context.arc(center.x, center.y, 30, 1.0*Math.PI, 1.0 * Math.PI); // half circle
-                            context.lineTo(center.x, center.y);
-                            context.fillStyle = pac_color; //color
-                            context.fill();
-                            await sleep(200);
-                            eated = false;
-                        }
+                        startAngel=1.15*Math.PI;
+                        stopAngel=0.85 * Math.PI;
+                        radius=30;
+                        centerX=center.x;
+                        centerY=center.y-15;
                         break;
                     case "down":
-                        context.beginPath();
-                        context.arc(center.x, center.y, 30, 0.65*Math.PI, 0.35 * Math.PI); // half circle
-                        context.lineTo(center.x, center.y);
-                        context.fillStyle = pac_color; //color
-                        context.fill();
-                        context.beginPath();
-                        context.arc(center.x + 15, center.y, 5, 0, 2 * Math.PI); // circle
-                        context.fillStyle = "black"; //color
-                        context.fill();
+                        startAngel=0.65*Math.PI;
+                        stopAngel=0.35 * Math.PI;
+                        radius=30;
+                        centerX=center.x+15;
+                        centerY=center.y;
                         break;
                     case "up":
-                        context.beginPath();
-                        context.arc(center.x, center.y, 30, 1.65*Math.PI, 1.35 * Math.PI); // half circle
-                        context.lineTo(center.x, center.y);
-                        context.fillStyle = pac_color; //color
-                        context.fill();
-                        context.beginPath();
-                        context.arc(center.x + 15, center.y, 5, 0, 2 * Math.PI); // circle
-                        context.fillStyle = "black"; //color
-                        context.fill();
+                        startAngel=1.65*Math.PI;
+                        stopAngel=1.35 * Math.PI;
+                        radius=30;
+                        centerX=center.x+15;
+                        centerY=center.y;                        
                         break;
                 }
-                            
+                context.beginPath();
+                context.arc(center.x, center.y, radius, startAngel, stopAngel); // half circle
+                context.lineTo(center.x, center.y);
+                context.fillStyle = pac_color; //color
+                context.fill();
+                context.beginPath();
+                context.arc(centerX, centerY, 5, 0, 2 * Math.PI); // circle
+                context.fillStyle = "black"; //color
+                context.fill();                
             } else if (board[i][j] === 5) {
                 context.beginPath();
                 context.arc(center.x, center.y, 6, 0, 2 * Math.PI); // circle
@@ -244,6 +211,28 @@ async function Draw() {
                 context.rect(center.x - 30, center.y - 30, 60, 60);
                 context.fillStyle = "grey"; //color
                 context.fill();
+            }
+            if(eated&&drawPackman){
+                context.beginPath();
+                context.arc(center.x, center.y, 30, startAngel/2, stopAngel/2); // half circle
+                context.lineTo(center.x, center.y);
+                context.fillStyle = pac_color; //color
+                context.fill();
+                context.beginPath();
+                context.arc(centerX, centerY, 5, 0, 2 * Math.PI); // circle
+                context.fillStyle = "black"; //color
+                context.fill();      
+                context.beginPath();
+                context.arc(center.x, center.y, 30, 0 * Math.PI, 2 * Math.PI); // half circle
+                context.lineTo(center.x, center.y);
+                context.fillStyle = pac_color; //color
+                context.fill();
+                context.beginPath();
+                context.arc(centerX, centerY, 5, 0, 2 * Math.PI); // circle
+                context.fillStyle = "black"; //color
+                context.fill();      
+                eated = false;
+                drawPackman = false;
             }
         }
     }
@@ -276,16 +265,16 @@ function UpdatePosition() {
     }
     if (board[shape.i][shape.j] === 5) {
         score+=5;
-        // eated = true;
+        eated = true;
     }
     if (board[shape.i][shape.j] === 15) {
         score+=15;
-        // eated = true;
+        eated = true;
 
     }
     if (board[shape.i][shape.j] === 25) {
         score+=25;
-        // eated = true;
+        eated = true;
     }
     board[shape.i][shape.j] = 2;
     var currentTime = new Date();
@@ -381,12 +370,14 @@ $("#registerForm").submit(function (e) {
             alert("Successful registeration");
             e.preventDefault();
         }
+        else{
+        alert("There is a user with this username");
+        }
     }
 });
 
 function checkLogin() {
     var username = document.getElementById("usernameLoginID").value
-    currentUser = username
     var password = document.getElementById("passordLoginID").value
     if (usersDataBase[username] === sha256(password)) {
         var loginForm = document.getElementById("loginForm");
@@ -465,8 +456,10 @@ function logout(){
     currentUser="";
     var loginForm = document.getElementById("loginForm");
     loginForm.hidden = false;
-    var settings = document.getElementById("game");
+    var settings = document.getElementById("settings");
     settings.hidden = true;
+    var game = document.getElementById("game");
+    game.hidden = true;
     resetSettings();
 
 }
@@ -498,3 +491,7 @@ function resetSettings(){
 
     document.getElementById("num_of_ghosts").value = undefined;
 }
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
