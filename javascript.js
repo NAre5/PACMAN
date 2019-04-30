@@ -26,7 +26,28 @@ var controls = { "left": undefined, "right": undefined, "up": undefined, "down":
 // var controls = {};
 
 var currentPage = "Welcome";
-var currentUser = "";
+var currentUser = {
+    username:"",
+    setUsername: function(username1){
+        this.username = username1;
+        document.getElementById("current_user").innerHTML=username1;
+    }
+};
+
+
+
+var MyVar = {
+    prop1: "Foo",
+    prop2: "Bar",
+    events: {},
+
+    setProp1: function(prop1) {
+        this.prop1 = prop1;
+        this.notify('prop1', this.prop1);
+    }
+};
+
+
 
 document.getElementById("range").oninput = function () {
     document.getElementById("range_number").innerHTML = this.value;
@@ -386,14 +407,13 @@ $("#registerForm").submit(function (e) {
 
 function checkLogin() {
     var username = document.getElementById("usernameLoginID").value
-    currentUser = username
     var password = document.getElementById("passordLoginID").value
     if (usersDataBase[username] === sha256(password)) {
         var loginForm = document.getElementById("loginForm");
         loginForm.hidden = true;
         var settings = document.getElementById("settings");
         settings.hidden = false;
-        currentUser = username;
+        currentUser.setUsername(username);
     }
     else {
         alert("username or password not exists. Try again")
@@ -428,7 +448,7 @@ function setRandom() {
     document.getElementById("num_of_ghosts").value = Math.floor(Math.random() * (max_ghosts + 1 - min_ghosts) + min_ghosts);
 }
 
-function set() {
+function setSetings() {
     food_remain = parseInt(document.getElementById("range").value);
     var cs = document.getElementsByClassName("controls");
     for (var i = 0; i < cs.length; i++) {
@@ -462,7 +482,8 @@ function set() {
 }
 
 function logout(){
-    currentUser="";
+    currentUser.setUsername("");
+
     var loginForm = document.getElementById("loginForm");
     loginForm.hidden = false;
     var settings = document.getElementById("game");
@@ -497,4 +518,13 @@ function resetSettings(){
     document.getElementById("gameTime").value = "";
 
     document.getElementById("num_of_ghosts").value = undefined;
+}
+
+function guest_basic(){
+    setRandom();
+    setSetings();
+    open_tab();
+    currentUser.setUsername("a");
+    document.getElementById("loginForm").hidden = true;
+    document.getElementById("game").hidden = false;
 }
