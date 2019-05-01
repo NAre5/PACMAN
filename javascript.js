@@ -1,13 +1,30 @@
 var context = canvas.getContext('2d');
-var shape = new Object();
-var board;
+var shape;// = new Position();
+var board;//0 is nothing, 1 is food, 2 is pacman, 3 is ghost, 5 is 5pointfood, 15 is 15pointfood, 25 is 25pointfood, 50 is 50pointfood
 var score;
 var pac_color;
 var start_time;
 var time_elapsed;
 var interval;
 var food_remain;
-var direction = "right"
+
+var Position = function(i,j){
+    var i= i,
+        j= j;
+}
+
+var DIRECTION = {
+    UP : {direction: new Position(1,0), name: "up", code: ""}, 
+    DOWN: {direction: new Position(-1,0), name: "down", code: ""}, 
+    LEFT : {direction: new Position(0,-1), name: "left", code: ""},
+    RIGHT : {direction: new Position(0,1), name: "right", code: ""}
+  };
+  
+
+var direction;
+// var direction = "right";
+// var direction = DIRECTION
+
 
 var max_balls = 90;
 var min_balls = 50;
@@ -18,8 +35,16 @@ var eated = false;
 var color5points;
 var color15points;
 var color25points;
-var ghostsNum;
 
+var ghostsNum;
+var ghost = function(position)
+{
+    var position  = position.clone(),
+        direction = undefined;//typeof DIRECTION
+        // color
+      
+}
+var ghosts = [];//the ghosts of the game
 
 var usersDataBase = { "a": sha256("a") };
 var controls = { "left": undefined, "right": undefined, "up": undefined, "down": undefined };
@@ -27,10 +52,10 @@ var controls = { "left": undefined, "right": undefined, "up": undefined, "down":
 
 var currentPage = "Welcome";
 var currentUser = {
-    username:"",
-    setUsername: function(username1){
+    username: "",
+    setUsername: function (username1) {
         this.username = username1;
-        document.getElementById("current_user").innerHTML=username1;
+        document.getElementById("current_user").innerHTML = username1;
     }
 };
 
@@ -41,7 +66,7 @@ var MyVar = {
     prop2: "Bar",
     events: {},
 
-    setProp1: function(prop1) {
+    setProp1: function (prop1) {
         this.prop1 = prop1;
         this.notify('prop1', this.prop1);
     }
@@ -66,6 +91,7 @@ function Start() {
     var num25Point = food_remain - num5Point - num15Point;
     var cnt = 100;
     var pacman_remain = 1;
+    var ghosts_remain = ghostsNum;
     start_time = new Date();
     for (var i = 0; i < 10; i++) {
         board[i] = new Array();
@@ -95,8 +121,7 @@ function Start() {
                     }
                     food_remain--;
                 } else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
-                    shape.i = i;
-                    shape.j = j;
+                    shape = new Position(i,j);
                     pacman_remain--;
                     board[i][j] = 2;
                 } else {
@@ -108,8 +133,21 @@ function Start() {
     }
     while (food_remain > 0) {
         var emptyCell = findRandomEmptyCell(board);
-        board[emptyCell[0]][emptyCell[1]] = 1;
+        board[emptyCell.i][emptyCell.j] = 1;
         food_remain--;
+    }
+    while (pacman_remain > 0) {
+        var emptyCell = findRandomEmptyCell(board);
+        shape = new Position(i,j);
+        pacman_remain--;
+        board[emptyCell.i][emptyCell.j] = 2;
+    }
+    while(ghosts_remain>0)
+    {
+        var emptyCell = findRandomEmptyCellForGhost(board);
+        board[emptyCell[0]][emptyCell[1]] = 3;
+        ghosts_remain--;
+        ghosts.push(new ghost(emptyCell));
     }
     keysDown = {};
     addEventListener("keydown", function (e) {
@@ -129,7 +167,25 @@ function findRandomEmptyCell(board) {
         i = Math.floor((Math.random() * 9) + 1);
         j = Math.floor((Math.random() * 9) + 1);
     }
-    return [i, j];
+    return new Position(i,j);
+}
+
+//assumption: there is a pacman on the board
+function findRandomEmptyCellForGhost(board) {
+    var i = shape.i,
+        j = shape.j;
+    while (board[i][j] == 2)//check
+    {
+        if (Math.random > 0.5) {
+            i = 0;
+            j = Math.floor((Math.random() * 9) + 1);
+        }
+        else {
+            i = Math.floor((Math.random() * 9) + 1);
+            j = 0;
+        }
+    }
+    return new Position(i,j);
 }
 
 /**
@@ -137,19 +193,19 @@ function findRandomEmptyCell(board) {
  */
 function GetKeyPressed() {
     if (keysDown[controls['up']]) {
-        direction="up";
+        direction = "up";
         return 1;
     }
     if (keysDown[controls['down']]) {
-        direction="down";
+        direction = "down";
         return 2;
     }
     if (keysDown[controls['left']]) {
-        direction="left";
+        direction = "left";
         return 3;
     }
     if (keysDown[controls['right']]) {
-        direction="right";
+        direction = "right";
         return 4;
     }
 }
@@ -163,7 +219,7 @@ function Draw() {
             var center = new Object();
             center.x = i * 60 + 30;
             center.y = j * 60 + 30;
-            var startAngel; 
+            var startAngel;
             var stopAngel;
             var radius;
             var centerX;
@@ -171,35 +227,34 @@ function Draw() {
             var drawPackman = false;
             if (board[i][j] === 2) {
                 drawPackman = true;
-                switch(direction)
-                {
+                switch (direction) {
                     case "right":
-                        startAngel=0.15 * Math.PI
-                        stopAngel=1.85 * Math.PI
-                        radius=30 
-                        centerX = center.x +5
-                        centerY = center.y -15
+                        startAngel = 0.15 * Math.PI
+                        stopAngel = 1.85 * Math.PI
+                        radius = 30
+                        centerX = center.x + 5
+                        centerY = center.y - 15
                         break;
                     case "left":
-                        startAngel=1.15*Math.PI;
-                        stopAngel=0.85 * Math.PI;
-                        radius=30;
-                        centerX=center.x;
-                        centerY=center.y-15;
+                        startAngel = 1.15 * Math.PI;
+                        stopAngel = 0.85 * Math.PI;
+                        radius = 30;
+                        centerX = center.x;
+                        centerY = center.y - 15;
                         break;
                     case "down":
-                        startAngel=0.65*Math.PI;
-                        stopAngel=0.35 * Math.PI;
-                        radius=30;
-                        centerX=center.x+15;
-                        centerY=center.y;
+                        startAngel = 0.65 * Math.PI;
+                        stopAngel = 0.35 * Math.PI;
+                        radius = 30;
+                        centerX = center.x + 15;
+                        centerY = center.y;
                         break;
                     case "up":
-                        startAngel=1.65*Math.PI;
-                        stopAngel=1.35 * Math.PI;
-                        radius=30;
-                        centerX=center.x+15;
-                        centerY=center.y;                        
+                        startAngel = 1.65 * Math.PI;
+                        stopAngel = 1.35 * Math.PI;
+                        radius = 30;
+                        centerX = center.x + 15;
+                        centerY = center.y;
                         break;
                 }
                 context.beginPath();
@@ -210,7 +265,7 @@ function Draw() {
                 context.beginPath();
                 context.arc(centerX, centerY, 5, 0, 2 * Math.PI); // circle
                 context.fillStyle = "black"; //color
-                context.fill();                
+                context.fill();
             } else if (board[i][j] === 5) {
                 context.beginPath();
                 context.arc(center.x, center.y, 6, 0, 2 * Math.PI); // circle
@@ -232,17 +287,20 @@ function Draw() {
                 context.rect(center.x - 30, center.y - 30, 60, 60);
                 context.fillStyle = "grey"; //color
                 context.fill();
+            }else if(board[i][j] == 3)
+            {
+                
             }
-            if(eated&&drawPackman){
+            if (eated && drawPackman) {
                 context.beginPath();
-                context.arc(center.x, center.y, 30, startAngel/2, stopAngel/2); // half circle
+                context.arc(center.x, center.y, 30, startAngel / 2, stopAngel / 2); // half circle
                 context.lineTo(center.x, center.y);
                 context.fillStyle = pac_color; //color
                 context.fill();
                 context.beginPath();
                 context.arc(centerX, centerY, 5, 0, 2 * Math.PI); // circle
                 context.fillStyle = "black"; //color
-                context.fill();      
+                context.fill();
                 context.beginPath();
                 context.arc(center.x, center.y, 30, 0 * Math.PI, 2 * Math.PI); // half circle
                 context.lineTo(center.x, center.y);
@@ -251,7 +309,7 @@ function Draw() {
                 context.beginPath();
                 context.arc(centerX, centerY, 5, 0, 2 * Math.PI); // circle
                 context.fillStyle = "black"; //color
-                context.fill();      
+                context.fill();
                 eated = false;
                 drawPackman = false;
             }
@@ -285,16 +343,16 @@ function UpdatePosition() {
         }
     }
     if (board[shape.i][shape.j] === 5) {
-        score+=5;
+        score += 5;
         eated = true;
     }
     if (board[shape.i][shape.j] === 15) {
-        score+=15;
+        score += 15;
         eated = true;
 
     }
     if (board[shape.i][shape.j] === 25) {
-        score+=25;
+        score += 25;
         eated = true;
     }
     board[shape.i][shape.j] = 2;
@@ -391,8 +449,8 @@ $("#registerForm").submit(function (e) {
             alert("Successful registeration");
             e.preventDefault();
         }
-        else{
-        alert("There is a user with this username");
+        else {
+            alert("There is a user with this username");
         }
     }
 });
@@ -473,7 +531,7 @@ function setSetings() {
     Start();
 }
 
-function logout(){
+function logout() {
     currentUser.setUsername("");
 
     var loginForm = document.getElementById("loginForm");
@@ -486,12 +544,12 @@ function logout(){
 
 }
 
-function stopGame(){
+function stopGame() {
     window.clearInterval(interval);
     //audio.pause();
 }
 
-function resetSettings(){
+function resetSettings() {
     controls["up"] = undefined;
     controls["right"] = undefined;
     controls["down"] = undefined;
@@ -514,10 +572,7 @@ function resetSettings(){
     document.getElementById("num_of_ghosts").value = undefined;
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-function guest_basic(){
+function guest_basic() {
     setRandom();
     setSetings();
     open_tab();
@@ -525,3 +580,18 @@ function guest_basic(){
     document.getElementById("loginForm").hidden = true;
     document.getElementById("game").hidden = false;
 }
+
+Object.prototype.clone = function () {
+    var i, newObj = (this instanceof Array) ? [] : {};
+    for (i in this) {
+        if (i === 'clone') {
+            continue;
+        }
+        if (this[i] && typeof this[i] === "object") {
+            newObj[i] = this[i].clone();
+        } else {
+            newObj[i] = this[i];
+        }
+    }
+    return newObj;
+};
