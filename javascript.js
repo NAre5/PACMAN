@@ -81,7 +81,6 @@ function Start() {
     board = new Array();
     score = 0;
     pac_color = "yellow";
-    pacman_remain=1;
     eaten50Points = false;
     pressedOnce = false;
     var num5Point = Math.round(0.6 * food_remain);
@@ -99,11 +98,11 @@ function Start() {
             if ((i === 3 && j === 3) || (i === 3 && j === 4) || (i === 3 && j === 5) || (i === 6 && j === 1) || (i === 6 && j === 2)) {
                 board[i][j] = 4;
             }
-            else if((i === 0 && j === 0)){
-                board[i][j]=50;
+            else if ((i === 0 && j === 0)) {
+                board[i][j] = 50;
                 bonusX = i;
                 bonusY = j;
-            } 
+            }
             else {
                 var randomNum = Math.random();
                 if (randomNum <= 1.0 * food_remain / cnt) {
@@ -283,11 +282,10 @@ function Draw() {
                 context.fillStyle = "grey"; //color
                 context.fill();
             }
-            else if(board[i][j]>=50)
-            {
-                center.x=center.x-15;
-                center.y=center.y+10;
-                context.fillStyle="gold"
+            else if (board[i][j] >= 50) {
+                center.x = center.x - 15;
+                center.y = center.y + 10;
+                context.fillStyle = "gold"
                 context.font = "30px Arial";
                 context.fillText("50", center.x, center.y);
             }
@@ -362,33 +360,28 @@ function UpdatePosition() {
         eated = true;
         eaten50Points = true;
     }
-    if(!eaten50Points)
-    {
-        board[bonusX][bonusY]-=50;
+    if (!eaten50Points) {
+        board[bonusX][bonusY] -= 50;
         var random = Math.random();
-        if(random<0.25)
-        {
-            bonusX = ((bonusX===0||board[bonusX-1][bonusY]===4)?bonusX:bonusX-1);
+        if (random < 0.25) {
+            bonusX = ((bonusX === 0 || board[bonusX - 1][bonusY] === 4) ? bonusX : bonusX - 1);
         }
-        else if(random<0.5)
-        {
-            bonusX = ((bonusX===9||board[bonusX+1][bonusY]===4)?bonusX:bonusX+1);
+        else if (random < 0.5) {
+            bonusX = ((bonusX === 9 || board[bonusX + 1][bonusY] === 4) ? bonusX : bonusX + 1);
         }
-        else if(random<0.75)
-        {
-            bonusY = ((bonusY===0||board[bonusX][bonusY-1]===4)?bonusY:bonusY-1);
+        else if (random < 0.75) {
+            bonusY = ((bonusY === 0 || board[bonusX][bonusY - 1] === 4) ? bonusY : bonusY - 1);
         }
-        else if(random<1)
-        {
-            bonusY = ((bonusY===9||board[bonusX][bonusY+1]===4)?bonusY:bonusY+1);
+        else if (random < 1) {
+            bonusY = ((bonusY === 9 || board[bonusX][bonusY + 1] === 4) ? bonusY : bonusY + 1);
         }
-        board[bonusX][bonusY]+=50;
+        board[bonusX][bonusY] += 50;
     }
     board[shape.i][shape.j] = 2;
     var currentTime = new Date();
-    time_elapsed =gameTime - ((currentTime - start_time) / 1000);
-    if (time_elapsed <=0) {
-        lblTime.value=0;
+    time_elapsed = gameTime - ((currentTime - start_time) / 1000);
+    if (time_elapsed <= 0) {
+        lblTime.value = 0;
         stopGame();
         if (score < 150) {
             alert("You can do better");
@@ -574,7 +567,6 @@ $("#settingsForm").submit(function (e) {
 function logout() {
     pressedOnce = false;
     eaten50Points = false;
-    pacman_remain=1
     direction = "right";
     currentUser.setUsername("");
     var loginForm = document.getElementById("loginForm");
@@ -634,7 +626,6 @@ function startNewGame() {
     direction = "right";
     food_remain = food_remain_new;
     gameTime = gameTime_new;
-    pacman_remain=1;
     stopGame();
     Start();
 }
