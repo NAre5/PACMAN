@@ -13,7 +13,7 @@
         <header>
             <img id="icon" src="imgs/icon.jpg" align="left">
             PACWOMAN
-            Eran Tagansky 208278861, Michael Michaelshvili 318949443 Current User: <label id="current_user"></label>
+            Eran Tagansky 208278861, Michael Michaelshvili 318949443
         </header>
 
         <nav class="menu">
@@ -149,12 +149,14 @@
 
                             </tr>
                         </table>
-                        <button type="submit">Set</button>
+                        <button type="submit">Set and Play!</button>
                         <button type="button" onclick="setRandom()">random settings</button>
                         <button type="reset" onclick="resetSettings()">Reset</button>
                     </form>
                 </div>
                 <div id="game" hidden>
+                        Current User: <label id="current_user"></label>
+                        <br>
                         SCORE:
                         <input id="lblScore" type="text" />
                         TIME:
@@ -164,6 +166,7 @@
                     <canvas id="canvas" height="600" width="600"></canvas>
                     
                     <button type="button" onclick="startNewGame()">New Game</button>
+                    <button type="button" onclick="changeSettings()">Change settings</button>
                 </div>
             </div>
             <dialog id="About" class="dialog">
