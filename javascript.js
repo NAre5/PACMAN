@@ -1,38 +1,72 @@
-var NONE        = 4,
-    UP          = 3,
-    LEFT        = 2,
-    DOWN        = 1,
-    RIGHT       = 11,
-    WAITING     = 5,
-    PAUSE       = 6,
-    PLAYING     = 7,
-    COUNTDOWN   = 8,
+var NONE = 4,
+    UP = 3,
+    WALL = 4,
+    LEFT = 2,
+    DOWN = 1,
+    RIGHT = 11,
+    WAITING = 5,
+    PAUSE = 6,
+    PLAYING = 7,
+    COUNTDOWN = 8,
     EATEN_PAUSE = 9,
-    DYING       = 10,
-    Pacman      = {};
+    DYING = 10,
+    Pacman = {};
 
 var context = canvas.getContext('2d');
 var shape;// = new Position();
-var board;//0 is nothing, 1 is food, 2 is pacman, 3 is ghost, 5 is 5pointfood, 15 is 15pointfood, 25 is 25pointfood, 50 is 50pointfood
+var board;//0 is nothing, 1 is food, 2 is pacman, 100 is ghost, 5 is 5pointfood, 15 is 15pointfood, 25 is 25pointfood, 50 is 50pointfood
 var score;
 var pac_color;
 var start_time;
 var time_elapsed;
 var interval;
 var food_remain;
+var lifes;//3
+var tick=0;
 
 var Position = function (i, j) {
-    // var i= i,
-    //     j= j;
-    this.i = i;
-    this.j = j;
+    var i = i,
+        j = j;
+
+    function distance(other) {
+        return Math.sqrt(Math.pow(this.i - other.i, 2) + Math.pow(this.j - other.j, 2));
+    }
+
+    function plus_position(other) {
+        return new Position(this.i + other.i, this.j + other.j);
+    }
+
+    function add_position(other) {
+        this.i += other.i;
+        this.j += other.j;;
+    }
+
+    // function minus_position(other) {
+    //     return new Position(this.i - other.j, this.j - other.j);
+    // }
+
+    return {
+        "i": i,
+        "j": j,
+        "distance": distance,
+        "plus_position": plus_position,
+        "add_position": add_position
+    };
 }
 
+
+
 var DIRECTION = {
-    UP: { direction: new Position(1, 0), name: "up", code: "" },
-    DOWN: { direction: new Position(-1, 0), name: "down", code: "" },
-    LEFT: { direction: new Position(0, -1), name: "left", code: "" },
-    RIGHT: { direction: new Position(0, 1), name: "right", code: "" }
+    // UP: { direction: new Position(0, -1), name: "up", code: "" },
+    // DOWN: { direction: new Position(0, 1), name: "down", code: "" },
+    // LEFT: { direction: new Position(-1, 0), name: "left", code: "" },
+    // RIGHT: { direction: new Position(1, 0), name: "right", code: "" },
+    // STILL: { direction: new Position(0, 0), name: "still", code: "" }
+    UP: { direction: new Position(-1, 0), name: "up", code: "" },
+    DOWN: { direction: new Position(1, 0), name: "down", code: "" },
+    LEFT: { direction: new Position(0, - 1), name: "left", code: "" },
+    RIGHT: { direction: new Position(0, 1), name: "right", code: "" },
+    STILL: { direction: new Position(0, 0), name: "still", code: "" }
 };
 
 
@@ -68,17 +102,17 @@ var pacman_remain;
 
 
 var ghostsNum;
-var ghost = function (position) {
-    var position = position,
-        direction = RIGHT;//typeof DIRECTION
+var ghost = function (p) {
+    var position = p,
+        direction = DIRECTION.STILL;//typeof DIRECTION
     // color
 
     function draw(ctx) {
-        var blockSize=60;
+        var blockSize = 60;
 
         var s = blockSize,
-            top = (position.j / 10) * s,
-            left = (position.i / 10) * s;
+            top = (this.position.i) * s,
+            left = (this.position.j) * s;
 
 
         var tl = left + s;
@@ -110,8 +144,8 @@ var ghost = function (position) {
 
         ctx.beginPath();
         ctx.fillStyle = "#FFF";
-        ctx.arc(left + 6, top + 6, s / 6, 0, 300, false);
-        ctx.arc((left + s) - 6, top + 6, s / 6, 0, 300, false);
+        ctx.arc(left + 20, top + 20, s / 7, 0, 300, false);
+        ctx.arc((left + s) - 20, top + 20, s / 7, 0, 300, false);
         ctx.closePath();
         ctx.fill();
 
@@ -121,20 +155,48 @@ var ghost = function (position) {
         off[LEFT] = [-f, 0];
         off[UP] = [0, -f];
         off[DOWN] = [0, f];
+        off[WAITING] = [0, 0];
 
-        ctx.beginPath();
-        ctx.fillStyle = "#000";
-        ctx.arc(left + 6 + off[direction][0], top + 6 + off[direction][1],
-            s / 15, 0, 300, false);
-        ctx.arc((left + s) - 6 + off[direction][0], top + 6 + off[direction][1],
-            s / 15, 0, 300, false);
-        ctx.closePath();
-        ctx.fill();
+        // ctx.beginPath();
+        // ctx.fillStyle = "#000";
+        // ctx.arc(left + 20 + off[direction][0], top + 20 + off[direction][1],
+        //     s / 18, 0, 300, false);
+        // ctx.arc((left + s) - 20 + off[direction][0], top + 20 + off[direction][1],
+        //     s / 18, 0, 300, false);
+        // ctx.closePath();
+        // ctx.fill();
     }
-    return{
-        "position":position,
-        "direction":direction,
-        "draw":draw
+    //changing the position using the variables: shape,board
+    function move() {
+
+        var maxdiff = -Infinity;
+        var newd;
+        for (d in DIRECTION) {
+            newPosition = this.position.plus_position(DIRECTION[d].direction);
+            try {
+                if (newPosition.i >= 0 && newPosition.i < 10 && newPosition.j >= 0 && newPosition.j < 10 &&
+                    board[newPosition.i][newPosition.j] != WALL) {
+                    diff = -shape.distance(this.position.plus_position(DIRECTION[d].direction)) +
+                        shape.distance(this.position);
+                    if (diff > maxdiff) {
+                        newd = d;
+                        maxdiff = diff;
+                    }
+                }
+            } catch{ }
+        }
+        //assumption: wont stuck
+        board[this.position.i][this.position.j] -= 100;
+        direction = DIRECTION[newd];
+        this.position.add_position(direction.direction);
+        board[this.position.i][this.position.j] += 100;
+
+    }
+    return {
+        "position": position,
+        "direction": direction,
+        "draw": draw,
+        "move": move
     };
 };
 var ghosts = [];//the ghosts of the game
@@ -182,18 +244,21 @@ document.getElementById("range").oninput = function () {
 
 function Start() {
     board = new Array();
+    tick=0;
     score = 0;
     pac_color = "yellow";
     pacman_remain = 1;
+    lifes = 3;
     eaten50Points = false;
     pressedOnce = false;
     var num5Point = Math.round(0.6 * food_remain);
     var num15Point = Math.round(0.3 * food_remain);
     var num25Point = food_remain - num5Point - num15Point;
     targetScore = 0;
-    targetScore = 5 * num5Point + 15 * num15Point + 25 * num25Point + 50;
+    targetScore = 5 * num5Point + 15 * num15Point + 25 * num25Point;
     var cnt = 100;
     var pacman_remain = 1;
+    ghosts = [];
     var ghosts_remain = ghostsNum;
     start_time = new Date();
     for (var i = 0; i < 10; i++) {
@@ -271,7 +336,7 @@ function Start() {
     }
     while (ghosts_remain > 0) {
         var emptyCell = findRandomEmptyCellForGhost(board);
-        board[emptyCell.i][emptyCell.j] = 3;
+        board[emptyCell.i][emptyCell.j] += 100;
         ghosts_remain--;
         ghosts.push(new ghost(emptyCell));
     }
@@ -282,9 +347,30 @@ function Start() {
     addEventListener("keyup", function (e) {
         keysDown[e.code] = false;
     }, false);
+    Draw();///////////////
     interval = setInterval(UpdatePosition, 125);
 }
 
+function reassemble() {//check
+    // tick=0;
+    board[shape.i][shape.j] -= 2;
+    for (i = 0, len = ghosts.length; i < len; i += 1) {
+        board[ghosts[i].position.i][ghosts[i].position.j] -= 100;
+    }
+
+    var emptyCell = findRandomEmptyCell(board);
+    shape = emptyCell;
+    board[emptyCell.i][emptyCell.j] = 2;
+    direction ="still";
+
+    for (i = 0, len = ghosts.length; i < len; i += 1) {
+        emptyCell = findRandomEmptyCellForGhost(board);
+        board[emptyCell.i][emptyCell.j] += 100;
+        ghosts[i].position = emptyCell;
+    }
+    Draw();
+    interval = setInterval(UpdatePosition, 125);
+}
 
 function findRandomEmptyCell(board) {
     var i = Math.floor((Math.random() * 9) + 1);
@@ -303,7 +389,7 @@ function findRandomEmptyCellForGhost(board) {
     try {
         while (board[i][j] == 2)//check
         {
-            if (Math.random > 0.5) {
+            if (Math.random() > 0.5) {
                 i = 0;
                 j = Math.floor((Math.random() * 9) + 1);
             }
@@ -354,8 +440,8 @@ function Draw() {
     for (var i = 0; i < 10; i++) {
         for (var j = 0; j < 10; j++) {
             var center = new Object();
-            center.x = i * 60 + 30;
-            center.y = j * 60 + 30;
+            center.x = j * 60 + 30;
+            center.y = i * 60 + 30;
             if (board[i][j] === 2) {
                 centerPackmanX = center.x;
                 centerPackmanY = center.y;
@@ -385,6 +471,13 @@ function Draw() {
                         centerX = center.x + 15;
                         centerY = center.y;
                         break;
+                    default:
+                        startAngel = 0.15 * Math.PI;
+                        stopAngel = 1.85 * Math.PI;
+                        centerX = center.x + 5;
+                        centerY = center.y - 15;
+                        break;
+
                 }
                 context.beginPath();
                 context.arc(center.x, center.y, 30, startAngel, stopAngel); // half circle
@@ -398,42 +491,42 @@ function Draw() {
 
 
             } else if (board[i][j] === 5) {
-                context.beginPath();
-                context.arc(center.x, center.y, 6, 0, 2 * Math.PI); // circle
-                context.fillStyle = color5points; //color
-                context.fill();
+                roundRect(context, center.x - 8, center.y - 8, 8, 8, 2, true, false, color5points);
+                // context.beginPath();
+                // context.arc(center.x, center.y, 6, 0, 2 * Math.PI); // circle
+                // context.fillStyle = color5points; //color
+                // context.fill();
             } else if (board[i][j] === 15) {
-                context.beginPath();
-                context.arc(center.x, center.y, 10, 0, 2 * Math.PI); // circle
-                context.fillStyle = color15points; //color
-                context.fill();
+                roundRect(context, center.x - 10, center.y - 10, 10, 10, 2, true, false, color15points);
+                // context.beginPath();
+                // context.arc(center.x, center.y, 10, 0, 2 * Math.PI); // circle
+                // context.fillStyle = color15points; //color
+                // context.fill();
             } else if (board[i][j] === 25) {
-                context.beginPath();
-                context.arc(center.x, center.y, 16, 0, 2 * Math.PI); // circle
-                context.fillStyle = color25points; //color
-                context.fill();
+                roundRect(context, center.x - 14, center.y - 14, 14, 14, 2, true, false, color25points);
+                // context.beginPath();
+                // context.arc(center.x, center.y, 16, 0, 2 * Math.PI); // circle
+                // context.fillStyle = color25points; //color
+                // context.fill();
             }
             else if (board[i][j] === 4) {
                 context.beginPath();
                 context.rect(center.x - 30, center.y - 30, 60, 60);
                 context.fillStyle = "grey"; //color
                 context.fill();
-            } else if (board[i][j] == 3) {
-
-            }
-            else if (board[i][j] >= 50) {
+            } else if (board[i][j] >= 50 && board[i][j] < 100) {
                 center.x = center.x - 15;
                 center.y = center.y + 10;
-                context.fillStyle = "gold"
+                context.fillStyle = "gold";//////////////////
                 context.font = "30px Arial";
                 context.fillText("50", center.x, center.y);
             }
         }
 
     }
-    // for (i = 0, len = ghosts.length; i < len; i += 1) {
-    //     ghosts[i].draw(context);
-    // }
+    for (i = 0, len = ghosts.length; i < len; i += 1) {
+        ghosts[i].draw(context);
+    }
     if (eated && drawPackman) {
         context.beginPath();
         context.arc(centerPackmanX, centerPackmanY, 30, 0 * Math.PI, 2 * Math.PI); // half circle
@@ -460,48 +553,78 @@ function Draw() {
 }
 
 function UpdatePosition() {
-    board[shape.i][shape.j] = 0;
+    if (tick % 2 == 1) {
+        for (i = 0, len = ghosts.length; i < len; i += 1) {
+            ghosts[i].move();
+        }
+    }
+    tick++;
+    board[shape.i][shape.j] -= 2;
     GetKeyPressed();
     if (pressedOnce) {
         if (direction === "up") {
-            if (shape.j > 0 && board[shape.i][shape.j - 1] !== 4) {
-                shape.j--;
-            }
-        }
-        else if (direction === "down") {
-            if (shape.j < 9 && board[shape.i][shape.j + 1] !== 4) {
-                shape.j++;
-            }
-        }
-        else if (direction === "left") {
             if (shape.i > 0 && board[shape.i - 1][shape.j] !== 4) {
                 shape.i--;
             }
         }
-        else if (direction === "right") {
+        else if (direction === "down") {
             if (shape.i < 9 && board[shape.i + 1][shape.j] !== 4) {
                 shape.i++;
             }
         }
+        else if (direction === "left") {
+            if (shape.j > 0 && board[shape.i][shape.j - 1] !== 4) {
+                shape.j--;
+            }
+        }
+        else if (direction === "right") {
+            if (shape.j < 9 && board[shape.i][shape.j + 1] !== 4) {
+                shape.j++;
+            }
+        }
     }
+    board[shape.i][shape.j] += 2;
+
+    if (board[shape.i][shape.j] >= 100) {
+        stopGame();
+        lifes--;
+        if (lifes == 0) {
+            alert("You lost!");
+            stopGame();
+        }
+        else {
+            alert("You've been eaten!\nnow you got " + lifes + "more lifes left");
+            reassemble();
+        }
+        return;
+
+    }
+    board[shape.i][shape.j] -= 2;
+    eated=false;//
     if (board[shape.i][shape.j] === 5) {
         score += 5;
         eated = true;
+        // board[shape.i][shape.j] -=5;
     }
-    if (board[shape.i][shape.j] === 15) {
+    else if (board[shape.i][shape.j] === 15) {
         score += 15;
         eated = true;
-
+        // board[shape.i][shape.j] -=15;
     }
-    if (board[shape.i][shape.j] === 25) {
+    else if (board[shape.i][shape.j] === 25) {
         score += 25;
         eated = true;
     }
-    if (board[shape.i][shape.j] === 50) {
-        score += 50;
+    else if (board[shape.i][shape.j] >= 50 && board[shape.i][shape.j] < 100) {
+        score += board[shape.i][shape.j];
         eated = true;
         eaten50Points = true;
     }
+    if(eated)
+    {
+        board[shape.i][shape.j] =0;
+    }
+    board[shape.i][shape.j] += 2;
     if (!eaten50Points) {
         board[bonusX][bonusY] -= 50;
         var random = Math.random();
@@ -519,7 +642,7 @@ function UpdatePosition() {
         }
         board[bonusX][bonusY] += 50;
     }
-    board[shape.i][shape.j] = 2;
+    
     var currentTime = new Date();
     time_elapsed = gameTime - ((currentTime - start_time) / 1000);
     if (time_elapsed <= 0) {
@@ -538,10 +661,10 @@ function UpdatePosition() {
         stopGame();
         window.alert("Game completed");
     } else {
-        var canvas = document.getElementById("canvas");
-        blockSize = canvas.offsetWidth / 10;
-        canvas.setAttribute("width", (blockSize * 10) + "px");
-        canvas.setAttribute("height", (blockSize * 10) + 30 + "px");
+        // var canvas = document.getElementById("canvas");
+        // blockSize = canvas.offsetWidth / 10;
+        // canvas.setAttribute("width", (blockSize * 10) + "px");
+        // canvas.setAttribute("height", (blockSize * 10) + 30 + "px");
         Draw();
     }
 }
@@ -790,4 +913,58 @@ function startNewGame() {
     pacman_remain = 1;
     stopGame();
     Start();
+}
+
+/**
+ * Draws a rounded rectangle using the current state of the canvas.
+ * If you omit the last three params, it will draw a rectangle
+ * outline with a 5 pixel border radius
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {Number} x The top left x coordinate
+ * @param {Number} y The top left y coordinate
+ * @param {Number} width The width of the rectangle
+ * @param {Number} height The height of the rectangle
+ * @param {Number} [radius = 5] The corner radius; It can also be an object 
+ *                 to specify different radii for corners
+ * @param {Number} [radius.tl = 0] Top left
+ * @param {Number} [radius.tr = 0] Top right
+ * @param {Number} [radius.br = 0] Bottom right
+ * @param {Number} [radius.bl = 0] Bottom left
+ * @param {Boolean} [fill = false] Whether to fill the rectangle.
+ * @param {Boolean} [stroke = true] Whether to stroke the rectangle.
+ */
+function roundRect(ctx, x, y, width, height, radius, fill, stroke, fillStyle) {
+    if (typeof stroke == 'undefined') {
+        stroke = true;
+    }
+    if (typeof radius === 'undefined') {
+        radius = 5;
+    }
+    if (typeof radius === 'number') {
+        radius = { tl: radius, tr: radius, br: radius, bl: radius };
+    } else {
+        var defaultRadius = { tl: 0, tr: 0, br: 0, bl: 0 };
+        for (var side in defaultRadius) {
+            radius[side] = radius[side] || defaultRadius[side];
+        }
+    }
+    ctx.beginPath();
+    ctx.moveTo(x + radius.tl, y);
+    ctx.lineTo(x + width - radius.tr, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+    ctx.lineTo(x + width, y + height - radius.br);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+    ctx.lineTo(x + radius.bl, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+    ctx.lineTo(x, y + radius.tl);
+    ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+    ctx.closePath();
+    ctx.fillStyle = fillStyle;
+    if (fill) {
+        ctx.fill();
+    }
+    if (stroke) {
+        ctx.stroke();
+    }
+
 }
