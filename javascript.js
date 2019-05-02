@@ -271,7 +271,7 @@ function Start() {
         board[emptyCell.i][emptyCell.j] = 2;
     }
     
-    for(var i = 0; i<3;i++){
+    for(var i = 0; i<2;i++){
     context1.fillStyle = "yellow";
     context1.beginPath();
     context1.arc(250+35*i,20,15, 0.15 * Math.PI, 1.85 * Math.PI);

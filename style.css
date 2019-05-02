@@ -1,19 +1,24 @@
 #icon{
-    width: 24px !important;
-    height: 24px !important;
+    width: 70px ;
+    height: 70px ;
 }
 * {
     box-sizing: border-box;
 }
+
 html,body{
     overflow: hidden;
 }
 body{
     background-image: url("imgs/background.png");
+    font-family:  BDCartoonShoutRegular;
 }
 
 .menu input{
     margin: 5px;
+}
+.menu input:hover{
+    transform: scale(1.2);
 }
 
 #settingsForm button, #loginForm button, #registerForm button, #game button{
@@ -30,8 +35,17 @@ body{
     transition-duration: 0.4s;
     cursor: pointer;
 }
-#footer {
+header{
     position:relative;
+    top:0;
+    width:100%;
+    height:60px;   /* Height of the footer */
+    background: #000000;;
+    color: yellow;
+    font-size: 140%;
+}
+#footer {
+    position:absolute;
     bottom:0;
     width:100%;
     height:60px;   /* Height of the footer */
@@ -96,3 +110,5 @@ body{
     border: 1px solid #888;
     width: 80%;
   }
+
+  
