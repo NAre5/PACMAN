@@ -3,167 +3,187 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="form_style.css">
+    <link rel="stylesheet" type="text/css" href="Footer-white.css">
     <link rel="icon" href="icon.png">
 </head>
 
 <body>
-    <header>
-        PACWOMAN
-        <img id="icon" src="icon.png">
-        E T 208278861, M M 318949443 Current User: <label id="current_user"></label>
-    </header>
+    <center>
+        <header>
+            PACWOMAN
+            <img id="icon" src="icon.png">
+            E T 208278861, M M 318949443 Current User: <label id="current_user"></label>
+        </header>
 
-    <nav class="menu">
-        <button onclick="open_tab()" value="Welcome">Welcome</button>
-        <button onclick="open_tab()" value="Register">Register</button>
-        <button onclick="open_tab()" value="Login">Login</button>
-        <button onclick="logout()" value="logout">Logout</button>
-        <button onclick="open_tab()" value="About">About</button>
-        <button onclick="guest_basic()" value="Login">guest_basic</button>
-    </nav>
+        <nav class="menu">
+            <input type="image" alt="Welcome" height="100px" src="imgs/welcome.jpg" onclick="open_tab()" value="Welcome" >
+            <input type="image" alt="Register" height="100px" src="imgs/Register.png" onclick="open_tab()" value="Register" >
+            <input type="image" alt="Login" height="100px" src="imgs/Login.png" onclick="open_tab()" value="Login" >
+            <input type="image" alt="Logout" height="100px" src="imgs/Logout.jpg" onclick="logout()" value="Welcome" >
+            <input type="image" alt="About" height="100px" src="imgs/About.jpg" onclick="showAbout()" value="About" id="about" >
 
-    <section>
-        <div id="Welcome">
-            <button onclick="open_tab()" value="Register">Register</button>
-            <button onclick="open_tab()" value="Login">Login</button>
-        </div>
+            <!-- <button onclick="open_tab()" value="Register" id="menuB2">Register</button> -->
+            <!-- <button onclick="open_tab()" value="Login" id="menuB3">Login</button>
+            <button onclick="logout()" value="logout" id="menuB4">Logout</button>
+            <button onclick="open_tab()" value="About" id="menuB5">About</button>
+            <button onclick="guest_basic()" value="Login">guest_basic</button> -->
+        </nav>
 
-        <div id="Register" hidden>
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.js"></script>
-            <form id="registerForm">
-                <div>
-                    <label for="username">Username</label>
-                    <input type="text" placeholder="Enter username" name="username" id="usernameID" required><br>
-                    <label for="password">Password</label>
-                    <input type="password" placeholder="Enter password" name="password" id="passwordID" required><br>
-                    <label for="firstname">First name</label>
-                    <input type="text" placeholder="Enter your first name" name="firstname" required><br>
-                    <label for="lastname">Last name</label>
-                    <input type="text" placeholder="Enter your last name" name="lastname" required><br>
-                    <label for="email">Email</label>
-                    <input type="text" placeholder="name@domain.com" name="email" required><br>
-                    <label for="birthday">Birth day</label>
-                    <input type="date" placeholder="dd/mm/yyyy" name="birthday" required><br>
-                    <button type="submit">Register</button>
-                    <button type="reset">Reset</button>
+        <section>
+            <div id="Welcome">
+                    <input type="image" alt="Register" height="400px" src="imgs/pacman.png" onclick="open_tab()" value="Register" >
+                    <input type="image" alt="Login" height="400px" src="imgs/pacwoman.png" onclick="open_tab()" value="Login" >
+            </div>
+
+            <div id="Register" hidden>
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.js"></script>
+                <form id="registerForm" class="form-style-8">
+                    <div>
+                        <label for="username">Username</label>
+                        <input type="text" placeholder="Enter username" name="username" id="usernameID" required><br>
+                        <label for="password">Password</label>
+                        <input type="password" placeholder="Enter password" name="password" id="passwordID"
+                            required><br>
+                        <label for="firstname">First name</label>
+                        <input type="text" placeholder="Enter your first name" name="firstname" required><br>
+                        <label for="lastname">Last name</label>
+                        <input type="text" placeholder="Enter your last name" name="lastname" required><br>
+                        <label for="email">Email</label>
+                        <input type="text" placeholder="name@domain.com" name="email" required><br>
+                        <label for="birthday">Birth day</label>
+                        <input type="date" placeholder="dd/mm/yyyy" name="birthday" required><br>
+                        <button type="submit">Register</button>
+                        <button type="reset">Reset</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="Login" hidden>
+                <div id="loginForm" class="form-style-8">
+                    <form>
+                        <label for="username">Username</label>
+                        <input value="a" type="text" id="usernameLoginID" placeholder="Enter username" required>
+                        <label for="password">password</label>
+                        <input value="a" type="password" id="passordLoginID" placeholder="Enter password" required>
+                        <button type="button" onclick="checkLogin()">Login</button>
+                    </form>
                 </div>
-            </form>
-        </div>
+                <div id="settings" hidden class="form-style-8">
+                    <form id="settingsForm">
+                        <table>
+                            <tr>
+                                <td>command</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>left</td>
+                                <td><input type="text" id="left" class="controls" onkeydown="getGameControl()"
+                                        placeholder="press on your keyboard to set left" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>right</td>
+                                <td><input type="text" id="right" class="controls" onkeydown="getGameControl()"
+                                        placeholder="press on your keyboard to set right" required></td>
+                            </tr>
+                            <tr>
+                                <td>up</td>
+                                <td><input type="text" id="up" class="controls" onkeydown="getGameControl()"
+                                        placeholder="press on your keyboard to set up" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>down</td>
+                                <td><input type="text" id="down" class="controls" onkeydown="getGameControl()"
+                                        placeholder="press on your keyboard to set down" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>number of balls<br> in the game</td>
+                                <td><input value="50" type="range" min="50" max="90" id="range" required></td>
+                                <td>
+                                    <p id="range_number">50</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    pick color for:
+                                </td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td>5 points ball</td>
+                                            <td><input type="color" id="5points" class="color" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>15 points ball</td>
+                                            <td><input type="color" id="15points" class="color" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>25 points ball</td>
+                                            <td><input type="color" id="25points" class="color" required></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>maximal time for game<br>(in seconds)</td>
+                                <td><input type="number" min="60" id="gameTime" required></td>
+                            </tr>
+                            <tr>
+                                <td>number of ghosts in the game</td>
+                                <td>
+                                    <select id="num_of_ghosts" required>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </td>
 
-        <div id="Login" hidden>
-            <div id="loginForm">
-                <form>
-                    <label for="username">Username</label>
-                    <input value="a" type="text" id="usernameLoginID" placeholder="Enter username" required>
-                    <label for="password">password</label>
-                    <input value="a" type="password" id="passordLoginID" placeholder="Enter password" required>
-                    <button type="button" onclick="checkLogin()">Login</button>
-                </form>
+                            </tr>
+                        </table>
+                        <button type="submit">Set</button>
+                        <button type="button" onclick="setRandom()">random settings</button>
+                        <button type="reset" onclick="resetSettings()">Reset</button>
+                    </form>
+                </div>
+                <div id="game" onkeydown="checkPause(e)" hidden>
+                    <canvas id="canvas" height="600" width="600" ></canvas>
+                    SCORE:
+                    <input id="lblScore" type="text" />
+                    TIME:
+                    <input id="lblTime" type="text" /><br>
+                    Lives:
+                    <canvas id="canvas1" height="50" width="600"></canvas>
+                    <button type="button" onclick="startNewGame()">New Game</button>
+                </div>
             </div>
-            <div id="settings" hidden>
-                <form id="settingsForm">
-                    <table>
-                        <tr>
-                            <td>command</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>left</td>
-                            <td><input type="text" id="left" class="controls" onkeydown="getGameControl()"
-                                    placeholder="press on your keyboard to set left" required>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>right</td>
-                            <td><input type="text" id="right" class="controls" onkeydown="getGameControl()"
-                                    placeholder="press on your keyboard to set right" required></td>
-                        </tr>
-                        <tr>
-                            <td>up</td>
-                            <td><input type="text" id="up" class="controls" onkeydown="getGameControl()"
-                                    placeholder="press on your keyboard to set up" required>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>down</td>
-                            <td><input type="text" id="down" class="controls" onkeydown="getGameControl()"
-                                    placeholder="press on your keyboard to set down" required>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>number of balls<br> in the game</td>
-                            <td><input value="50" type="range" min="50" max="90" id="range" required></td>
-                            <td>
-                                <p id="range_number">50</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                pick color for:
-                            </td>
-                            <td>
-                                <table>
-                                    <tr>
-                                        <td>5 points ball</td>
-                                        <td><input type="color" id="5points" class="color" required></td>
-                                    </tr>
-                                    <tr>
-                                        <td>15 points ball</td>
-                                        <td><input type="color" id="15points" class="color" required></td>
-                                    </tr>
-                                    <tr>
-                                        <td>25 points ball</td>
-                                        <td><input type="color" id="25points" class="color" required></td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>maximal time for game<br>(in seconds)</td>
-                            <td><input type="number" min="60" id="gameTime" required></td>
-                        </tr>
-                        <tr>
-                            <td>number of ghosts in the game</td>
-                            <td>
-                                <select id="num_of_ghosts" required>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                </select>
-                            </td>
+            <dialog id="About" class="dialog" >
+                <!-- <button onclick="closeDialog()">Close dialog</button> -->
+                <span class="close" class="dialog">&times; </span>
+                <p class="dialog">Some text in the Modal..<br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>qewqeqwew
 
-                        </tr>
-                    </table>
-                    <button type="submit">Set</button>
-                    <button type="button" onclick="setRandom()">random settings</button>
-                    <button type="reset" onclick="resetSettings()">Reset</button>
-                </form>
-            </div>
-            <div id="game" hidden>
-                SCORE:
-                <input id="lblScore" type="text" />
-                <br />
-                TIME:
-                <input id="lblTime" type="text" />
-                <br />
-                <canvas id="canvas" height="600" width="600"></canvas>
-                <button type="button" onclick="startNewGame()">New Game</button>
-            </div>
-        </div>
+                </p>
+                <!-- <button onclick="closeDialog()">Close dialog</button> -->
+            </dialog>
+            </section>
 
-        <div id="About" hidden>
-
-        </div>
-    </section>
-
-    <footer>
-        Please don't call us. we are busy.<br>
-        if you want to email someone than: atuda_ac@idf.gov.il
-    </footer>
+        <footer id="footer"> 
+            Please don't call us. we are busy.<br>
+            if you want to email someone than: atuda_ac@idf.gov.il
+            
+        <a href="mailto:michmich@post.bgu.ac.il">Mail to Michael</a> 
+        <a href="mailto:erantag@post.bgu.ac.il">Mail to Eran</a> 
+        </footer>
 
 
-
+    </center>
 
     <script src="sha256.min.js"></script>
     <script src="javascript.js"></script>
