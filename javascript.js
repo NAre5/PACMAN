@@ -1,13 +1,47 @@
+var NONE = 4,
+    UP = 3,
+    LEFT = 2,
+    DOWN = 1,
+    RIGHT = 11,
+    WAITING = 5,
+    PAUSE = 6,
+    PLAYING = 7,
+    COUNTDOWN = 8,
+    EATEN_PAUSE = 9,
+    DYING = 10,
+    Pacman = {};
+
 var context = canvas.getContext('2d');
-var shape = new Object();
-var board;
+var context1 = canvas1.getContext('2d');
+var shape;// = new Position();
+var board;//0 is nothing, 1 is food, 2 is pacman, 3 is ghost, 5 is 5pointfood, 15 is 15pointfood, 25 is 25pointfood, 50 is 50pointfood
 var score;
 var pac_color;
 var start_time;
 var time_elapsed;
 var interval;
 var food_remain;
-var direction = "right";
+var clock_interval;
+
+var Position = function (i, j) {
+    // var i= i,
+    //     j= j;
+    this.i = i;
+    this.j = j;
+}
+
+var DIRECTION = {
+    UP: { direction: new Position(-1, 0), name: "up", code: "" },
+    DOWN: { direction: new Position(1, 0), name: "down", code: "" },
+    LEFT: { direction: new Position(0, -1), name: "left", code: "" },
+    RIGHT: { direction: new Position(0, 1), name: "right", code: "" }
+};
+
+
+var direction;
+// var direction = "right";
+// var direction = DIRECTION
+
 
 var max_balls = 90;
 var min_balls = 50;
@@ -35,6 +69,77 @@ var gameTime_new;
 var pacman_remain;
 
 
+var ghostsNum;
+var ghost = function (position) {
+    var position = position,
+        direction = RIGHT;//typeof DIRECTION
+    // color
+
+    function draw(ctx) {
+        var blockSize = 60;
+
+        var s = blockSize,
+            top = (position.j / 10) * s,
+            left = (position.i / 10) * s;
+
+
+        var tl = left + s;
+        var base = top + s - 3;
+        var inc = s / 10;
+
+        // var high = game.getTick() % 10 > 5 ? 3 : -3;
+        // var low = game.getTick() % 10 > 5 ? -3 : 3;
+        var high = 3;
+        var low = -3;
+
+        ctx.fillStyle = "#0000BB";
+        ctx.beginPath();
+
+        ctx.moveTo(left, base);
+
+        ctx.quadraticCurveTo(left, top, left + (s / 2), top);
+        ctx.quadraticCurveTo(left + s, top, left + s, base);
+
+        // Wavy things at the bottom
+        ctx.quadraticCurveTo(tl - (inc * 1), base + high, tl - (inc * 2), base);
+        ctx.quadraticCurveTo(tl - (inc * 3), base + low, tl - (inc * 4), base);
+        ctx.quadraticCurveTo(tl - (inc * 5), base + high, tl - (inc * 6), base);
+        ctx.quadraticCurveTo(tl - (inc * 7), base + low, tl - (inc * 8), base);
+        ctx.quadraticCurveTo(tl - (inc * 9), base + high, tl - (inc * 10), base);
+
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = "#FFF";
+        ctx.arc(left + 6, top + 6, s / 6, 0, 300, false);
+        ctx.arc((left + s) - 6, top + 6, s / 6, 0, 300, false);
+        ctx.closePath();
+        ctx.fill();
+
+        var f = s / 12;
+        var off = {};
+        off[RIGHT] = [f, 0];
+        off[LEFT] = [-f, 0];
+        off[UP] = [0, -f];
+        off[DOWN] = [0, f];
+
+        ctx.beginPath();
+        ctx.fillStyle = "#000";
+        ctx.arc(left + 6 + off[direction][0], top + 6 + off[direction][1],
+            s / 15, 0, 300, false);
+        ctx.arc((left + s) - 6 + off[direction][0], top + 6 + off[direction][1],
+            s / 15, 0, 300, false);
+        ctx.closePath();
+        ctx.fill();
+    }
+    return {
+        "position": position,
+        "direction": direction,
+        "draw": draw
+    };
+};
+var ghosts = [];//the ghosts of the game
 
 var usersDataBase = { "a": sha256("a") };
 var controls = { "left": undefined, "right": undefined, "up": undefined, "down": undefined };
@@ -81,6 +186,7 @@ function Start() {
     board = new Array();
     score = 0;
     pac_color = "yellow";
+    pacman_remain = 1;
     eaten50Points = false;
     pressedOnce = false;
     var num5Point = Math.round(0.6 * food_remain);
@@ -89,7 +195,7 @@ function Start() {
     targetScore = 0;
     targetScore = 5 * num5Point + 15 * num15Point + 25 * num25Point;
     var cnt = 100;
-    pacman_remain = 1;
+    var ghosts_remain = ghostsNum;
     start_time = new Date();
     for (var i = 0; i < 10; i++) {
         board[i] = new Array();
@@ -125,8 +231,7 @@ function Start() {
                     }
                     food_remain--;
                 } else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
-                    shape.i = i;
-                    shape.j = j;
+                    shape = new Position(i, j);
                     pacman_remain--;
                     board[i][j] = 2;
                 } else {
@@ -136,30 +241,49 @@ function Start() {
             }
         }
     }
-    if (pacman_remain > 0) {
-        var emptyCell = findRandomEmptyCell(board);
-        board[emptyCell[0]][emptyCell[1]] = 2;
-        pacman_remain--;
-    }
+    // if (pacman_remain > 0) {
+    //     var emptyCell = findRandomEmptyCell(board);
+    //     board[emptyCell.i][emptyCell.j] = 2;
+    //     pacman_remain--;
+    // }
     while (num5Point > 0) {
         var emptyCell = findRandomEmptyCell(board);
-        board[emptyCell[0]][emptyCell[1]] = 5;
+        board[emptyCell.i][emptyCell.j] = 5;
         food_remain--;
         num5Point--;
     }
     while (num15Point > 0) {
         var emptyCell = findRandomEmptyCell(board);
-        board[emptyCell[0]][emptyCell[1]] = 15;
+        board[emptyCell.i][emptyCell.j] = 15;
         food_remain--;
         num15Point--;
     }
     while (num25Point > 0) {
         var emptyCell = findRandomEmptyCell(board);
-        board[emptyCell[0]][emptyCell[1]] = 25;
+        board[emptyCell.i][emptyCell.j] = 25;
         food_remain--;
         num25Point--;
     }
-
+    while (pacman_remain > 0) {
+        var emptyCell = findRandomEmptyCell(board);
+        shape = emptyCell;
+        pacman_remain--;
+        board[emptyCell.i][emptyCell.j] = 2;
+    }
+    
+    for(var i = 0; i<3;i++){
+    context1.fillStyle = "yellow";
+    context1.beginPath();
+    context1.arc(250+35*i,20,15, 0.15 * Math.PI, 1.85 * Math.PI);
+    context1.lineTo(250+35*i, 20);
+    context1.fill();
+    }
+    // while (ghosts_remain > 0) {
+    //     var emptyCell = findRandomEmptyCellForGhost(board);
+    //     board[emptyCell.i][emptyCell.j] = 3;
+    //     ghosts_remain--;
+    //     ghosts.push(new ghost(emptyCell));
+    // }
     keysDown = {};
     addEventListener("keydown", function (e) {
         keysDown[e.code] = true;
@@ -168,6 +292,7 @@ function Start() {
         keysDown[e.code] = false;
     }, false);
     interval = setInterval(UpdatePosition, 125);
+    // clock_interval = setInterval(drawClock, 125);
 }
 
 
@@ -178,7 +303,26 @@ function findRandomEmptyCell(board) {
         i = Math.floor((Math.random() * 9) + 1);
         j = Math.floor((Math.random() * 9) + 1);
     }
-    return [i, j];
+    return new Position(i, j);
+}
+
+//assumption: there is a pacman on the board
+function findRandomEmptyCellForGhost(board) {
+    var i = shape.i,
+        j = shape.j;
+    while (board[i][j] == 2)//check
+    {
+        if (Math.random() > 0.5) {
+            i = 0;
+            j = Math.floor((Math.random() * 9) + 1);
+        }
+        else {
+            i = Math.floor((Math.random() * 9) + 1);
+            j = 0;
+        }
+    }
+
+    return new Position(i, j);
 }
 
 /**
@@ -248,6 +392,13 @@ function Draw() {
                         centerX = center.x + 15;
                         centerY = center.y;
                         break;
+                    default:
+                        startAngel = 0.15 * Math.PI;
+                        stopAngel = 1.85 * Math.PI;
+                        centerX = center.x + 5;
+                        centerY = center.y - 15;
+                        break;
+
                 }
                 context.beginPath();
                 context.arc(center.x, center.y, 30, startAngel, stopAngel); // half circle
@@ -281,17 +432,22 @@ function Draw() {
                 context.rect(center.x - 30, center.y - 30, 60, 60);
                 context.fillStyle = "grey"; //color
                 context.fill();
+            } else if (board[i][j] == 3) {
+
             }
             else if (board[i][j] >= 50) {
-                center.x = center.x - 15;
+                center.x = center.x - 22;
                 center.y = center.y + 10;
                 context.fillStyle = "gold"
                 context.font = "30px Arial";
-                context.fillText("50", center.x, center.y);
+                context.fillText("+50", center.x, center.y);
             }
         }
 
     }
+    // for (i = 0, len = ghosts.length; i < len; i += 1) {
+    //     ghosts[i].draw(context);
+    // }
     if (eated && drawPackman) {
         context.beginPath();
         context.arc(centerPackmanX, centerPackmanY, 30, 0 * Math.PI, 2 * Math.PI); // half circle
@@ -342,38 +498,45 @@ function UpdatePosition() {
             }
         }
     }
-    if (board[shape.i][shape.j] === 5) {
+    if (board[shape.i][shape.j] === 5 || board[shape.i][shape.j] === 55) {
         score += 5;
         eated = true;
     }
-    if (board[shape.i][shape.j] === 15) {
+    else if (board[shape.i][shape.j] === 15 || board[shape.i][shape.j] === 65) {
         score += 15;
         eated = true;
-
     }
-    if (board[shape.i][shape.j] === 25) {
+    else if (board[shape.i][shape.j] === 25 || board[shape.i][shape.j] === 75) {
         score += 25;
         eated = true;
     }
-    if (board[shape.i][shape.j] === 50) {
+    if ((board[shape.i][shape.j]>=50||(shape.i===bonusX&&shape.j===bonusY))&&board[shape.i][shape.j]<=100){
         score += 50;
         eated = true;
         eaten50Points = true;
+        if((shape.i===bonusX&&shape.j===bonusY))
+        {
+            bonusX=11;
+            bonusY=11;
+            board[shape.i][shape.j] -= 50;
+        }
     }
     if (!eaten50Points) {
-        board[bonusX][bonusY] -= 50;
+        if (board[bonusX][bonusY] >= 50) {
+            board[bonusX][bonusY] -= 50;
+        }
         var random = Math.random();
-        if (random < 0.25) {
-            bonusX = ((bonusX === 0 || board[bonusX - 1][bonusY] === 4) ? bonusX : bonusX - 1);
-        }
-        else if (random < 0.5) {
-            bonusX = ((bonusX === 9 || board[bonusX + 1][bonusY] === 4) ? bonusX : bonusX + 1);
-        }
-        else if (random < 0.75) {
+        if (random < 0.25) {//up
             bonusY = ((bonusY === 0 || board[bonusX][bonusY - 1] === 4) ? bonusY : bonusY - 1);
         }
-        else if (random < 1) {
+        else if (random < 0.5) {//down
             bonusY = ((bonusY === 9 || board[bonusX][bonusY + 1] === 4) ? bonusY : bonusY + 1);
+        }
+        else if (random < 0.75) {//left
+            bonusX = ((bonusX === 0 || board[bonusX - 1][bonusY] === 4) ? bonusX : bonusX - 1);
+        }
+        else if (random < 1) {//right
+            bonusX = ((bonusX === 9 || board[bonusX + 1][bonusY] === 4) ? bonusX : bonusX + 1);
         }
         board[bonusX][bonusY] += 50;
     }
@@ -391,11 +554,15 @@ function UpdatePosition() {
         }
 
     }
-    else if (score === targetScore) {
+    else if (score >= targetScore) {
         Draw();
         stopGame();
         window.alert("Game completed");
     } else {
+        var canvas = document.getElementById("canvas");
+        blockSize = canvas.offsetWidth / 10;
+        canvas.setAttribute("width", (blockSize * 10) + "px");
+        canvas.setAttribute("height", (blockSize * 10) + 30 + "px");
         Draw();
     }
 }
@@ -523,7 +690,7 @@ function setRandom() {
     document.getElementById("15points").value = "#" + ('00000' + (Math.random() * (1 << 24) | 0).toString(16)).slice(-6);
     document.getElementById("25points").value = "#" + ('00000' + (Math.random() * (1 << 24) | 0).toString(16)).slice(-6);
 
-    document.getElementById("gameTime").value = Math.floor(Math.random() * (600000 - 60) + 60);
+    document.getElementById("gameTime").value = Math.floor(Math.random() * (6000 - 60) + 60);
 
     document.getElementById("num_of_ghosts").value = Math.floor(Math.random() * (max_ghosts + 1 - min_ghosts) + min_ghosts);
 }
@@ -577,10 +744,12 @@ function logout() {
     game.hidden = true;
     resetSettings();
     stopGame();
+    open_tab();
 }
 
 function stopGame() {
     window.clearInterval(interval);
+    window.clearInterval(clock_interval);
     //audio.pause();
 }
 
@@ -609,13 +778,28 @@ function resetSettings() {
 
 function guest_basic() {
     setRandom();
-    setSetings();
-    open_tab();
+    document.getElementById("settingsForm").submit(new Event());
     currentUser.setUsername("a");
+    currentPage = "Login";
+    document.getElementById("Login").hidden = false;
     document.getElementById("loginForm").hidden = true;
     document.getElementById("game").hidden = false;
 }
 
+// Object.prototype.clone = function () {
+//     var i, newObj = (this instanceof Array) ? [] : {};
+//     for (i in this) {
+//         if (i === 'clone') {
+//             continue;
+//         }
+//         if (this[i] && typeof this[i] === "object") {
+//             newObj[i] = this[i].clone();
+//         } else {
+//             newObj[i] = this[i];
+//         }
+//     }
+//     return newObj;
+// };
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -629,3 +813,98 @@ function startNewGame() {
     stopGame();
     Start();
 }
+
+function drawClock() {
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    var radius = canvas.height / 2;
+    ctx.translate(radius, radius);
+    radius = radius * 0.90
+    setInterval(drawClock, 1000);
+    drawFace(ctx, radius);
+    drawNumbers(ctx, radius);
+    drawTime(ctx, radius);
+}
+
+function drawFace(ctx, radius) {
+    var grad;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    grad = ctx.createRadialGradient(0, 0, radius * 0.95, 0, 0, radius * 1.05);
+    grad.addColorStop(0, '#333');
+    grad.addColorStop(0.5, 'white');
+    grad.addColorStop(1, '#333');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = radius * 0.1;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI);
+    ctx.fillStyle = '#333';
+    ctx.fill();
+}
+
+function drawNumbers(ctx, radius) {
+    var ang;
+    var num;
+    ctx.font = radius * 0.15 + "px arial";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    for (num = 1; num < 13; num++) {
+        ang = num * Math.PI / 6;
+        ctx.rotate(ang);
+        ctx.translate(0, -radius * 0.85);
+        ctx.rotate(-ang);
+        ctx.fillText(num.toString(), 0, 0);
+        ctx.rotate(ang);
+        ctx.translate(0, radius * 0.85);
+        ctx.rotate(-ang);
+    }
+}
+
+function drawTime(ctx, radius) {
+    var now = new Date();
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+    var second = now.getSeconds();
+    //hour
+    hour = hour % 12;
+    hour = (hour * Math.PI / 6) +
+        (minute * Math.PI / (6 * 60)) +
+        (second * Math.PI / (360 * 60));
+    drawHand(ctx, hour, radius * 0.5, radius * 0.07);
+    //minute
+    minute = (minute * Math.PI / 30) + (second * Math.PI / (30 * 60));
+    drawHand(ctx, minute, radius * 0.8, radius * 0.07);
+    // second
+    second = (second * Math.PI / 30);
+    drawHand(ctx, second, radius * 0.9, radius * 0.02);
+}
+
+function drawHand(ctx, pos, length, width) {
+    ctx.beginPath();
+    ctx.lineWidth = width;
+    ctx.lineCap = "round";
+    ctx.moveTo(0, 0);
+    ctx.rotate(pos);
+    ctx.lineTo(0, -length);
+    ctx.stroke();
+    ctx.rotate(-pos);
+}
+
+function showAbout() {
+    document.getElementById("About").showModal();
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+        document.getElementById("About").close();
+    }
+}
+function closeDialog() {
+    document.getElementById("About").close();
+}
+
+$('#About').click(function(e) {
+    if (!e.target.classList.contains("dialogComponent"))
+    document.getElementById("About").close();
+});
