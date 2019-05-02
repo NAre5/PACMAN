@@ -25,7 +25,6 @@ var interval;
 var food_remain;
 var lifes;//3
 var tick = 0;
-var die_interval;
 var time_to_start;
 var stop_flag = false;
 
@@ -47,12 +46,17 @@ var Position = function (i, j) {
     }
 
     function plus_position(other) {
-        return new Position(this.i + other.i, this.j + other.j);
+
+            return new Position(this.i + other.i, this.j + other.j);
+
     }
 
     function add_position(other) {
         this.i += other.i;
         this.j += other.j;;
+    }
+    function equals(other){
+        return this.i==other.i && this.j==other.j;
     }
 
     // function minus_position(other) {
@@ -64,7 +68,8 @@ var Position = function (i, j) {
         "j": j,
         "distance": distance,
         "plus_position": plus_position,
-        "add_position": add_position
+        "add_position": add_position,
+        "equals":equals
     };
 }
 
@@ -76,15 +81,18 @@ var DIRECTION = {
     // LEFT: { direction: new Position(-1, 0), name: "left", code: "" },
     // RIGHT: { direction: new Position(1, 0), name: "right", code: "" },
     // STILL: { direction: new Position(0, 0), name: "still", code: "" }
-    UP: { direction: new Position(-1, 0), name: "up", code: "" },
-    DOWN: { direction: new Position(1, 0), name: "down", code: "" },
-    LEFT: { direction: new Position(0, - 1), name: "left", code: "" },
-    RIGHT: { direction: new Position(0, 1), name: "right", code: "" },
-    STILL: { direction: new Position(0, 0), name: "still", code: "" }
+    UP: { direction: new Position(-1, 0), name: "up" },
+    DOWN: { direction: new Position(1, 0), name: "down" },
+    LEFT: { direction: new Position(0, - 1), name: "left" },
+    RIGHT: { direction: new Position(0, 1), name: "right" },
+    STILL: { direction: new Position(0, 0), name: "still" },
+    opposite_direction: function opposite_direction(d1,d2){
+        return (d1.direction.plus_position(d2.direction).equals(new Position(0,0)));
+    }
 };
 
-
-var direction;
+var pacman_direction;
+// var direction;
 // var direction = "right";
 // var direction = DIRECTION
 
@@ -116,10 +124,10 @@ var pacman_remain;
 
 
 var ghostsNum;
-var ghost = function (p) {
+var ghost = function (p,c) {
     var position = p,
+        color = c,
         direction = DIRECTION.STILL;//typeof DIRECTION
-    // color
 
     function draw(ctx) {
         var blockSize = 60;
@@ -133,12 +141,12 @@ var ghost = function (p) {
         var base = top + s - 3;
         var inc = s / 10;
 
-        // var high = game.getTick() % 10 > 5 ? 3 : -3;
-        // var low = game.getTick() % 10 > 5 ? -3 : 3;
-        var high = 3;
-        var low = -3;
+        var high = tick % 2 == 0 ? 6 : -6;
+        var low = tick % 2 == 1 ? 6 : -6;
 
-        ctx.fillStyle = "#0000BB";
+
+        // ctx.fillStyle = "#0000BB";
+        ctx.fillStyle = this.color;
         ctx.beginPath();
 
         ctx.moveTo(left, base);
@@ -165,29 +173,28 @@ var ghost = function (p) {
 
         var f = s / 12;
         var off = {};
-        off[RIGHT] = [f, 0];
-        off[LEFT] = [-f, 0];
-        off[UP] = [0, -f];
-        off[DOWN] = [0, f];
-        off[WAITING] = [0, 0];
+        off[DIRECTION.RIGHT.name] = [f, 0];
+        off[DIRECTION.LEFT.name] = [-f, 0];
+        off[DIRECTION.UP.name] = [0, -f];
+        off[DIRECTION.DOWN.name] = [0, f];
+        off[DIRECTION.STILL.name] = [0, 0];
 
-        // ctx.beginPath();
-        // ctx.fillStyle = "#000";
-        // ctx.arc(left + 20 + off[direction][0], top + 20 + off[direction][1],
-        //     s / 18, 0, 300, false);
-        // ctx.arc((left + s) - 20 + off[direction][0], top + 20 + off[direction][1],
-        //     s / 18, 0, 300, false);
-        // ctx.closePath();
-        // ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = "#000";
+        ctx.arc(left + 20 + off[this.direction.name][0], top + 20 + off[this.direction.name][1],
+            s / 18, 0, 300, false);
+        ctx.arc((left + s) - 20 + off[this.direction.name][0], top + 20 + off[this.direction.name][1],
+            s / 18, 0, 300, false);
+        ctx.closePath();
+        ctx.fill();
     }
     //changing the position using the variables: shape,board
     function move() {
-
         var maxdiff = -Infinity;
         var newd;
         for (d in DIRECTION) {
-            newPosition = this.position.plus_position(DIRECTION[d].direction);
             try {
+                newPosition = this.position.plus_position(DIRECTION[d].direction);
                 if (newPosition.i >= 0 && newPosition.i < 10 && newPosition.j >= 0 && newPosition.j < 10 &&
                     board[newPosition.i][newPosition.j] != WALL) {
                     diff = -shape.distance(this.position.plus_position(DIRECTION[d].direction)) +
@@ -201,13 +208,14 @@ var ghost = function (p) {
         }
         //assumption: wont stuck
         board[this.position.i][this.position.j] -= 100;
-        direction = DIRECTION[newd];
-        this.position.add_position(direction.direction);
+        this.direction = DIRECTION[newd];
+        this.position.add_position(this.direction.direction);
         board[this.position.i][this.position.j] += 100;
 
     }
     return {
         "position": position,
+        "color":color,
         "direction": direction,
         "draw": draw,
         "move": move
@@ -258,6 +266,7 @@ document.getElementById("range").oninput = function () {
 
 function Start() {
     board = new Array();
+    pacman_direction=DIRECTION.STILL;
     tick = 0;
     stop_flag = false;
     score = 0;
@@ -344,11 +353,13 @@ function Start() {
         pacman_remain--;
         board[emptyCell.i][emptyCell.j] = 2;
     }
+    var randomColor;
     while (ghosts_remain > 0) {
         var emptyCell = findRandomEmptyCellForGhost(board);
         board[emptyCell.i][emptyCell.j] += 100;
         ghosts_remain--;
-        ghosts.push(new ghost(emptyCell));
+        randomColor = "#" + ('00000' + (Math.random() * (1 << 24) | 0).toString(16)).slice(-6);
+        ghosts.push(new ghost(emptyCell,randomColor));
     }
     context1.clearRect(0, 0, canvas1.width, canvas1.height);
     for (var i = 0; i < lifes; i++) {
@@ -360,15 +371,15 @@ function Start() {
     }
 
     keysDown = {};
-    addEventListener("keydown", function (e) {
-        keysDown[e.code] = true;
-    }, false);
+    // addEventListener("keydown", function (e) {
+    // }, false);
     addEventListener("keyup", function (e) {
         keysDown[e.code] = false;
     }, false);
 
     addEventListener("keydown", function (e) {
-        if (lifes > 0 && e.code == "KeyP") {
+        keysDown[e.code] = true;
+        if (lifes>0 && e.code == "KeyP") {
             stop_flag = !stop_flag;
             if (stop_flag) {
                 stopGame();
@@ -394,7 +405,7 @@ function reassemble() {//check
     var emptyCell = findRandomEmptyCell(board);
     shape = emptyCell;
     board[emptyCell.i][emptyCell.j] = 2;
-    direction = "still";
+    pacman_direction = DIRECTION.STILL;
 
     for (i = 0, len = ghosts.length; i < len; i += 1) {
         emptyCell = findRandomEmptyCellForGhost(board);
@@ -448,19 +459,19 @@ function findRandomEmptyCellForGhost(board) {
 
 function GetKeyPressed() {
     if (keysDown[controls['up']]) {
-        direction = "up";
+        pacman_direction = DIRECTION.UP;
         pressedOnce = true;
     }
     else if (keysDown[controls['down']]) {
-        direction = "down";
+        pacman_direction = DIRECTION.DOWN;
         pressedOnce = true;
     }
     else if (keysDown[controls['left']]) {
-        direction = "left";
+        pacman_direction = DIRECTION.LEFT;
         pressedOnce = true;
     }
     else if (keysDown[controls['right']]) {
-        direction = "right";
+        pacman_direction = DIRECTION.RIGHT;
         pressedOnce = true;
     }
 }
@@ -473,8 +484,8 @@ function Draw() {
     var centerPackmanY;
     var centerX;
     var centerY;
-    var startAngel;
-    var stopAngel;
+    var startAngle;
+    var stopAngle;
     var drawPackman = false;
     for (var i = 0; i < 10; i++) {
         for (var j = 0; j < 10; j++) {
@@ -485,41 +496,41 @@ function Draw() {
                 centerPackmanX = center.x;
                 centerPackmanY = center.y;
                 drawPackman = true;
-                switch (direction) {
+                switch (pacman_direction.name) {
                     case "right":
-                        startAngel = 0.15 * Math.PI;
-                        stopAngel = 1.85 * Math.PI;
+                        startAngle = 0.15 * Math.PI;
+                        stopAngle = 1.85 * Math.PI;
                         centerX = center.x + 5;
                         centerY = center.y - 15;
                         break;
                     case "left":
-                        startAngel = 1.15 * Math.PI;
-                        stopAngel = 0.85 * Math.PI;
+                        startAngle = 1.15 * Math.PI;
+                        stopAngle = 0.85 * Math.PI;
                         centerX = center.x;
                         centerY = center.y - 15;
                         break;
                     case "down":
-                        startAngel = 0.65 * Math.PI;
-                        stopAngel = 0.35 * Math.PI;
+                        startAngle = 0.65 * Math.PI;
+                        stopAngle = 0.35 * Math.PI;
                         centerX = center.x + 15;
                         centerY = center.y;
                         break;
                     case "up":
-                        startAngel = 1.65 * Math.PI;
-                        stopAngel = 1.35 * Math.PI;
+                        startAngle = 1.65 * Math.PI;
+                        stopAngle = 1.35 * Math.PI;
                         centerX = center.x + 15;
                         centerY = center.y;
                         break;
-                    default:
-                        startAngel = 0.15 * Math.PI;
-                        stopAngel = 1.85 * Math.PI;
+                    case "still":
+                        startAngle = 0.15 * Math.PI;
+                        stopAngle = 1.85 * Math.PI;
                         centerX = center.x + 5;
                         centerY = center.y - 15;
                         break;
 
                 }
                 context.beginPath();
-                context.arc(center.x, center.y, 30, startAngel, stopAngel); // half circle
+                context.arc(center.x, center.y, 30, startAngle, stopAngle); // half circle
                 context.lineTo(center.x, center.y);
                 context.fillStyle = pac_color; //color
                 context.fill();
@@ -577,7 +588,7 @@ function Draw() {
         context.fillStyle = "black"; //color
         context.fill();
         context.beginPath();
-        context.arc(centerPackmanX, centerPackmanY, 30, startAngel, stopAngel); // half circle
+        context.arc(centerPackmanX, centerPackmanY, 30, startAngle, stopAngle); // half circle
         context.lineTo(centerPackmanX, centerPackmanY);
         context.fillStyle = pac_color; //color
         context.fill();
@@ -601,29 +612,45 @@ function UpdatePosition() {
         if (tick % 2 == 1) {
             for (i = 0, len = ghosts.length; i < len; i += 1) {
                 ghosts[i].move();
+                if (board[shape.i][shape.j] >= 100 && DIRECTION.opposite_direction(ghosts[i].direction,pacman_direction)) {//////////
+                    stopGame();
+                    die_audio.play();
+                    lifes--;
+                    if (lifes == 0) {
+                        context1.clearRect(0,0,canvas1.width,canvas1.height);
+                        alert("You Lost!");
+                    }
+                    else {
+                        alert("You've been eaten!\nnow you got " + lifes + "more lifes left");
+                        reassemble();
+                    }
+                    return;
+            
+                }
             }
         }
     }
     tick++;
+
     board[shape.i][shape.j] -= 2;
     GetKeyPressed();
     if (pressedOnce) {
-        if (direction === "up") {
+        if (pacman_direction.name === "up") {
             if (shape.i > 0 && board[shape.i - 1][shape.j] !== 4) {
                 shape.i--;
             }
         }
-        else if (direction === "down") {
+        else if (pacman_direction.name === "down") {
             if (shape.i < 9 && board[shape.i + 1][shape.j] !== 4) {
                 shape.i++;
             }
         }
-        else if (direction === "left") {
+        else if (pacman_direction.name === "left") {
             if (shape.j > 0 && board[shape.i][shape.j - 1] !== 4) {
                 shape.j--;
             }
         }
-        else if (direction === "right") {
+        else if (pacman_direction.name === "right") {
             if (shape.j < 9 && board[shape.i][shape.j + 1] !== 4) {
                 shape.j++;
             }
@@ -632,6 +659,7 @@ function UpdatePosition() {
     board[shape.i][shape.j] += 2;
 
     if (board[shape.i][shape.j] >= 100) {
+        Draw();
         stopGame();
         lifes--;
         die_audio.play();
@@ -896,7 +924,7 @@ $("#settingsForm").submit(function (e) {
 function logout() {
     pressedOnce = false;
     eaten50Points = false;
-    direction = "right";
+    pacman_direction = DIRECTION.STILL;
     currentUser.setUsername("");
     var loginForm = document.getElementById("loginForm");
     loginForm.hidden = false;
@@ -910,8 +938,8 @@ function logout() {
 }
 
 function stopGame() {
+    keysDown ={};
     window.clearInterval(interval);
-    window.clearInterval(clock_interval);
     game_audio.pause();
     game_audio.currentTime = 0;
 }
@@ -970,7 +998,7 @@ function sleep(ms) {
 function startNewGame() {
     pressedOnce = false;
     eaten50Points = false;
-    direction = "right";
+    pacman_direction = DIRECTION.STILL;
     food_remain = food_remain_new;
     gameTime = gameTime_new;
     stopGame();
@@ -1030,84 +1058,84 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke, fillStyle) {
     }
 
 }
-function drawClock() {
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
-    var radius = canvas.height / 2;
-    ctx.translate(radius, radius);
-    radius = radius * 0.90
-    setInterval(drawClock, 1000);
-    drawFace(ctx, radius);
-    drawNumbers(ctx, radius);
-    drawTime(ctx, radius);
-}
+// function drawClock() {
+//     var canvas = document.getElementById("canvas");
+//     var ctx = canvas.getContext("2d");
+//     var radius = canvas.height / 2;
+//     ctx.translate(radius, radius);
+//     radius = radius * 0.90
+//     setInterval(drawClock, 1000);
+//     drawFace(ctx, radius);
+//     drawNumbers(ctx, radius);
+//     drawTime(ctx, radius);
+// }
 
-function drawFace(ctx, radius) {
-    var grad;
-    ctx.beginPath();
-    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-    ctx.fillStyle = 'white';
-    ctx.fill();
-    grad = ctx.createRadialGradient(0, 0, radius * 0.95, 0, 0, radius * 1.05);
-    grad.addColorStop(0, '#333');
-    grad.addColorStop(0.5, 'white');
-    grad.addColorStop(1, '#333');
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = radius * 0.1;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI);
-    ctx.fillStyle = '#333';
-    ctx.fill();
-}
+// function drawFace(ctx, radius) {
+//     var grad;
+//     ctx.beginPath();
+//     ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+//     ctx.fillStyle = 'white';
+//     ctx.fill();
+//     grad = ctx.createRadialGradient(0, 0, radius * 0.95, 0, 0, radius * 1.05);
+//     grad.addColorStop(0, '#333');
+//     grad.addColorStop(0.5, 'white');
+//     grad.addColorStop(1, '#333');
+//     ctx.strokeStyle = grad;
+//     ctx.lineWidth = radius * 0.1;
+//     ctx.stroke();
+//     ctx.beginPath();
+//     ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI);
+//     ctx.fillStyle = '#333';
+//     ctx.fill();
+// }
 
-function drawNumbers(ctx, radius) {
-    var ang;
-    var num;
-    ctx.font = radius * 0.15 + "px arial";
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "center";
-    for (num = 1; num < 13; num++) {
-        ang = num * Math.PI / 6;
-        ctx.rotate(ang);
-        ctx.translate(0, -radius * 0.85);
-        ctx.rotate(-ang);
-        ctx.fillText(num.toString(), 0, 0);
-        ctx.rotate(ang);
-        ctx.translate(0, radius * 0.85);
-        ctx.rotate(-ang);
-    }
-}
+// function drawNumbers(ctx, radius) {
+//     var ang;
+//     var num;
+//     ctx.font = radius * 0.15 + "px arial";
+//     ctx.textBaseline = "middle";
+//     ctx.textAlign = "center";
+//     for (num = 1; num < 13; num++) {
+//         ang = num * Math.PI / 6;
+//         ctx.rotate(ang);
+//         ctx.translate(0, -radius * 0.85);
+//         ctx.rotate(-ang);
+//         ctx.fillText(num.toString(), 0, 0);
+//         ctx.rotate(ang);
+//         ctx.translate(0, radius * 0.85);
+//         ctx.rotate(-ang);
+//     }
+// }
 
-function drawTime(ctx, radius) {
-    var now = new Date();
-    var hour = now.getHours();
-    var minute = now.getMinutes();
-    var second = now.getSeconds();
-    //hour
-    hour = hour % 12;
-    hour = (hour * Math.PI / 6) +
-        (minute * Math.PI / (6 * 60)) +
-        (second * Math.PI / (360 * 60));
-    drawHand(ctx, hour, radius * 0.5, radius * 0.07);
-    //minute
-    minute = (minute * Math.PI / 30) + (second * Math.PI / (30 * 60));
-    drawHand(ctx, minute, radius * 0.8, radius * 0.07);
-    // second
-    second = (second * Math.PI / 30);
-    drawHand(ctx, second, radius * 0.9, radius * 0.02);
-}
+// function drawTime(ctx, radius) {
+//     var now = new Date();
+//     var hour = now.getHours();
+//     var minute = now.getMinutes();
+//     var second = now.getSeconds();
+//     //hour
+//     hour = hour % 12;
+//     hour = (hour * Math.PI / 6) +
+//         (minute * Math.PI / (6 * 60)) +
+//         (second * Math.PI / (360 * 60));
+//     drawHand(ctx, hour, radius * 0.5, radius * 0.07);
+//     //minute
+//     minute = (minute * Math.PI / 30) + (second * Math.PI / (30 * 60));
+//     drawHand(ctx, minute, radius * 0.8, radius * 0.07);
+//     // second
+//     second = (second * Math.PI / 30);
+//     drawHand(ctx, second, radius * 0.9, radius * 0.02);
+// }
 
-function drawHand(ctx, pos, length, width) {
-    ctx.beginPath();
-    ctx.lineWidth = width;
-    ctx.lineCap = "round";
-    ctx.moveTo(0, 0);
-    ctx.rotate(pos);
-    ctx.lineTo(0, -length);
-    ctx.stroke();
-    ctx.rotate(-pos);
-}
+// function drawHand(ctx, pos, length, width) {
+//     ctx.beginPath();
+//     ctx.lineWidth = width;
+//     ctx.lineCap = "round";
+//     ctx.moveTo(0, 0);
+//     ctx.rotate(pos);
+//     ctx.lineTo(0, -length);
+//     ctx.stroke();
+//     ctx.rotate(-pos);
+// }
 
 function showAbout() {
     document.getElementById("About").showModal();
@@ -1132,9 +1160,3 @@ function changeSettings(){
     document.getElementById("game").hidden = true;
 }
 
-function drawDead()
-{
-    center.x = pacman
-    context.arc(center.x, center.y, 30, startAngel, stopAngel); // half circle
-
-}
