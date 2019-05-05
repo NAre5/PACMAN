@@ -36,6 +36,9 @@ var bonus__eat_audio = new Audio("audio/eatpill.mp3");
 bonus__eat_audio.loop = false;
 var die_audio = new Audio("audio/die.mp3");
 bonus__eat_audio.loop = false;
+var winning_audio = new Audio("audio/battleOver.mp3");
+winning_audio.loop = false;
+
 
 
 var Position = function (i, j) {
@@ -765,11 +768,16 @@ function UpdatePosition() {
               });
         }
         else {
+            winning_audio.play();
             Swal.fire({
                 type: 'success',
                 title: 'We have a Winner!!!',//plus score
                 text: "you've got " + score + " points",
                 showCloseButton: true,
+                imageUrl: 'imgs/giphy.gif',
+              }).then((result) => {
+                winning_audio.pause();
+                winning_audio.currentTime=0;
               });
         }
         return;
@@ -777,10 +785,15 @@ function UpdatePosition() {
     else if (score >= targetScore) {
         Draw();
         stopGame();
+        winning_audio.play();
         Swal.fire({
             type: 'success',
             title: 'We have a Winner!!!',//plus score
             showCloseButton: true,
+            imageUrl: 'imgs/giphy.gif',
+          }).then((result) => {
+            winning_audio.pause();
+            winning_audio.currentTime=0;
           });
         return;
     } else {
@@ -1188,13 +1201,6 @@ window.onclick =function (e) {
         document.getElementById("About").close();
 };
 
-
-// Swal.fire({
-//     type: 'success',
-//     title: 'We have a Winner!!!',//plus score
-//     text: "you've got " + 10 + " points",
-//     showCloseButton: true,
-//   });
 function changeSettings(){
     stopGame();
     document.getElementById("settings").hidden = false;
@@ -1211,3 +1217,10 @@ function setScroll(){
 
 }
 setScroll();
+
+
+
+// Swal.fire({
+    
+//     imageAlt: 'A tall image'
+//   })
