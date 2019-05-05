@@ -938,9 +938,8 @@ $("#settingsForm").submit(function (e) {
     for (var i = 0; i < cs.length; i++) {
         for (var j = i + 1; j < cs.length; j++) {
             if (cs[i].value == cs[j].value) {
-                Swal.fire("controls must be different").then((result) => {
-                    return;
-                });
+                Swal.fire("controls must be different");
+                return;
             }
         }
     }
@@ -952,9 +951,8 @@ $("#settingsForm").submit(function (e) {
     for (var i = 0; i < cs.length; i++) {
         for (var j = i + 1; j < cs.length; j++) {
             if (cs[i].value === cs[j].value) {
-                Swal.fire("colors must be different").then((result) => {
+                Swal.fire("colors must be different");
                     return;
-                });
             }
         }
     }
@@ -1051,7 +1049,7 @@ function startNewGame() {
     gameTime = gameTime_new;
     stopGame();
     removeEventListener("keydown",handlekeydown);
-    removeEventListener("keyip",handlekeyup);
+    removeEventListener("keyup",handlekeyup);
     Start();
 }
 
