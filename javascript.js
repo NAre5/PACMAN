@@ -618,11 +618,21 @@ function UpdatePosition() {
                     lifes--;
                     if (lifes == 0) {
                         context1.clearRect(0,0,canvas1.width,canvas1.height);
-                        alert("You Lost!");
+                        Swal.fire({
+                            type: 'error',
+                            title: 'You Lost!',
+                            showCloseButton: true,
+                          })
                     }
                     else {
-                        alert("You've been eaten!\nnow you got " + lifes + "more lifes left");
-                        reassemble();
+                        Swal.fire({
+                            type: 'error',
+                            title: "You've been eaten!...",
+                            text: 'now you got ' + lifes + ' more lifes left',
+                            showCloseButton: true,
+                          }).then((result) => {
+                            reassemble();
+                          });  
                     }
                     return;
             
@@ -664,15 +674,24 @@ function UpdatePosition() {
         lifes--;
         die_audio.play();
         if (lifes == 0) {
-            context1.clearRect(0, 0, canvas1.width, canvas1.height);
-            alert("You Lost!");
+            context1.clearRect(0,0,canvas1.width,canvas1.height);
+            Swal.fire({
+                type: 'error',
+                title: 'You Lost!',
+                showCloseButton: true,
+              })
         }
         else {
-            alert("You've been eaten!\nnow you got " + lifes + " more lifes left");
-            reassemble();
+            Swal.fire({
+                type: 'error',
+                title: "You've been eaten!...",
+                text: "now you got " + lifes + " more lifes left",
+                showCloseButton: true,
+              }).then((result) => {
+                reassemble();
+              });
         }
         return;
-
     }
     board[shape.i][shape.j] -= 2;
     eated = false;//
@@ -734,22 +753,34 @@ function UpdatePosition() {
         lblTime.value = 0;
         stopGame();
         if (score < 150) {
-            alert("You can do better");
+
+            Swal.fire({
+                type: 'error',
+                title: 'You can do better',//plus score
+                text: "you've got " + score + " points",
+                showCloseButton: true,
+              });
         }
         else {
-            alert("We have a Winner!!!")
+            Swal.fire({
+                type: 'success',
+                title: 'We have a Winner!!!',//plus score
+                text: "you've got " + score + " points",
+                showCloseButton: true,
+              });
         }
-
+        return;
     }
     else if (score >= targetScore) {
         Draw();
         stopGame();
-        window.alert("Game completed");
+        Swal.fire({
+            type: 'success',
+            title: 'We have a Winner!!!',//plus score
+            showCloseButton: true,
+          });
+        return;
     } else {
-        // var canvas = document.getElementById("canvas");
-        // blockSize = canvas.offsetWidth / 10;
-        // canvas.setAttribute("width", (blockSize * 10) + "px");
-        // canvas.setAttribute("height", (blockSize * 10) + 30 + "px");
         Draw();
     }
     if (time_to_start > 0) {
@@ -1154,6 +1185,12 @@ window.onclick =function (e) {
 };
 
 
+// Swal.fire({
+//     type: 'success',
+//     title: 'We have a Winner!!!',//plus score
+//     text: "you've got " + 10 + " points",
+//     showCloseButton: true,
+//   });
 function changeSettings(){
     stopGame();
     document.getElementById("settings").hidden = false;
