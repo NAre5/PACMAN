@@ -873,15 +873,17 @@ $("#registerForm").submit(function (e) {
         if (usersDataBase[username] == undefined) {
             var password = document.getElementById("passwordID").value;
             usersDataBase[username] = sha256(password)
-            alert("Successful registeration");
-            e.preventDefault();
-            document.getElementById("Welcome").hidden=false;
-            currentPage.setPageName("Welcome");
-            document.getElementById("Register").hidden=true;
+            Swal.fire("Successful registeration").then((result) => {
+                e.preventDefault();
+                document.getElementById("Welcome").hidden = false;
+                currentPage.setPageName("Welcome");
+                document.getElementById("Register").hidden = true;
+            });
         }
         else {
-            alert("There is a user with this username");
-            e.preventDefault();
+            Swal.fire("There is a user with this username").then((result) => {
+                e.preventDefault();
+            });
         }
     }
 });
@@ -897,7 +899,7 @@ function checkLogin() {
         currentUser.setUsername(username);
     }
     else {
-        alert("username or password not exists. Try again")
+        Swal.fire("username or password not exists. Try again");
     }
 }
 
@@ -936,8 +938,9 @@ $("#settingsForm").submit(function (e) {
     for (var i = 0; i < cs.length; i++) {
         for (var j = i + 1; j < cs.length; j++) {
             if (cs[i].value == cs[j].value) {
-                alert("controls must be different");
-                return;
+                Swal.fire("controls must be different").then((result) => {
+                    return;
+                });
             }
         }
     }
@@ -949,8 +952,9 @@ $("#settingsForm").submit(function (e) {
     for (var i = 0; i < cs.length; i++) {
         for (var j = i + 1; j < cs.length; j++) {
             if (cs[i].value === cs[j].value) {
-                alert("colors must be different");
-                return;
+                Swal.fire("colors must be different").then((result) => {
+                    return;
+                });
             }
         }
     }
@@ -1217,12 +1221,5 @@ function setScroll(){
 
 }
 setScroll();
-
-
-
-// Swal.fire({
-    
-//     imageAlt: 'A tall image'
-//   })
 
 
