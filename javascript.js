@@ -143,11 +143,11 @@ var ghost = function (p,c) {
 
 
         var tl = left + s;
-        var base = top + s - 3;
+        var base = top + s - blockSize/(60/3);
         var inc = s / 10;
 
-        var high = tick % 2 == 0 ? 6 : -6;
-        var low = tick % 2 == 1 ? 6 : -6;
+        var high = tick % 2 == 0 ? blockSize/(60/6) : -blockSize/(60/6);
+        var low = tick % 2 == 1 ? blockSize/(60/6) : -blockSize/(60/6);
 
 
         // ctx.fillStyle = "#0000BB";
@@ -171,8 +171,8 @@ var ghost = function (p,c) {
 
         ctx.beginPath();
         ctx.fillStyle = "#FFF";
-        ctx.arc(left + 20, top + 20, s / 7, 0, 300, false);
-        ctx.arc((left + s) - 20, top + 20, s / 7, 0, 300, false);
+        ctx.arc(left + blockSize/(60/20), top + blockSize/(60/20), s / 7, 0, 300, false);
+        ctx.arc((left + s) - blockSize/(60/20), top + blockSize/(60/20), s / 7, 0, 300, false);
         ctx.closePath();
         ctx.fill();
 
@@ -186,9 +186,9 @@ var ghost = function (p,c) {
 
         ctx.beginPath();
         ctx.fillStyle = "#000";
-        ctx.arc(left + 20 + off[this.direction.name][0], top + 20 + off[this.direction.name][1],
+        ctx.arc(left + blockSize/(60/20) + off[this.direction.name][0], top + blockSize/(60/20) + off[this.direction.name][1],
             s / 18, 0, 300, false);
-        ctx.arc((left + s) - 20 + off[this.direction.name][0], top + 20 + off[this.direction.name][1],
+        ctx.arc((left + s) - blockSize/(60/20) + off[this.direction.name][0], top + blockSize/(60/20) + off[this.direction.name][1],
             s / 18, 0, 300, false);
         ctx.closePath();
         ctx.fill();
@@ -1226,3 +1226,5 @@ setScroll();
     
 //     imageAlt: 'A tall image'
 //   })
+
+
