@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="form_style.css">
+    <link rel="stylesheet" type="text/css" href="Footer-white.css">
+    <link rel="icon" href="icon.png">
+    <script src="sweetalert2@8.js"></script>
+
+</head>
+
+<body>
+    <center>
+        <header>
+            <img id="icon" src="imgs/icon.jpg" align="left">
+            PACWOMAN
+            Eran Tagansky 208278861, Michael Michaelshvili 318949443
+        </header>
+
+        <nav class="menu">
+            <input type="image" alt="Welcome" height="100px" src="imgs/welcome.jpg" onclick="open_tab()"
+                value="Welcome">
+            <input type="image" alt="Register" height="100px" src="imgs/Register.png" onclick="open_tab()"
+                value="Register">
+            <input type="image" alt="Login" height="100px" src="imgs/Login.png" onclick="open_tab()" value="Login">
+            <input type="image" alt="Logout" height="100px" src="imgs/Logout.jpg" onclick="logout()" value="Welcome">
+            <input type="image" alt="About" height="100px" src="imgs/About.jpg" onclick="showAbout()" value="About"
+                id="about">
+
+            <!-- <button onclick="open_tab()" value="Register" id="menuB2">Register</button> -->
+            <!-- <button onclick="open_tab()" value="Login" id="menuB3">Login</button>
+            <button onclick="logout()" value="logout" id="menuB4">Logout</button>
+            <button onclick="open_tab()" value="About" id="menuB5">About</button>
+            <button onclick="guest_basic()" value="Login">guest_basic</button> -->
+        </nav>
+
+        <section>
+            <div id="Welcome">
+                <input type="image" alt="Register" height="400px" src="imgs/pacman.png" onclick="open_tab()"
+                    value="Register">
+                <input type="image" alt="Login" height="400px" src="imgs/pacwoman.png" onclick="open_tab()"
+                    value="Login">
+            </div>
+
+            <div id="Register" hidden>
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.js"></script>
+                <form id="registerForm" class="form-style-8">
+                    <div>
+                        <label for="username">Username</label>
+                        <input type="text" placeholder="Enter username" name="username" id="usernameID" required><br>
+                        <label for="password">Password</label>
+                        <input type="password" placeholder="Enter password" name="password" id="passwordID"
+                            required><br>
+                        <label for="firstname">First name</label>
+                        <input type="text" placeholder="Enter your first name" name="firstname" required><br>
+                        <label for="lastname">Last name</label>
+                        <input type="text" placeholder="Enter your last name" name="lastname" required><br>
+                        <label for="email">Email</label>
+                        <input type="text" placeholder="name@domain.com" name="email" required><br>
+                        <label for="birthday">Birth day</label>
+                        <input type="date" placeholder="dd/mm/yyyy" name="birthday" required><br>
+                        <button type="submit">Register</button>
+                        <button type="reset">Reset</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="Login" hidden>
+                <div id="loginForm" class="form-style-8">
+                    <form>
+                        <label for="username">Username</label>
+                        <input value="a" type="text" id="usernameLoginID" placeholder="Enter username" required>
+                        <label for="password">password</label>
+                        <input value="a" type="password" id="passordLoginID" placeholder="Enter password" required>
+                        <button type="button" onclick="checkLogin()">Login</button>
+                    </form>
+                </div>
+                <div id="settings" hidden class="form-style-8">
+                    <form id="settingsForm">
+                        <table>
+                            <tr>
+                                <td>command</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>left</td>
+                                <td><input type="text" id="left" class="controls" onkeydown="getGameControl()"
+                                        placeholder="press on your keyboard to set left" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>right</td>
+                                <td><input type="text" id="right" class="controls" onkeydown="getGameControl()"
+                                        placeholder="press on your keyboard to set right" required></td>
+                            </tr>
+                            <tr>
+                                <td>up</td>
+                                <td><input type="text" id="up" class="controls" onkeydown="getGameControl()"
+                                        placeholder="press on your keyboard to set up" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>down</td>
+                                <td><input type="text" id="down" class="controls" onkeydown="getGameControl()"
+                                        placeholder="press on your keyboard to set down" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>number of balls<br> in the game</td>
+                                <td><input value="50" type="range" min="50" max="90" id="range" required></td>
+                                <td>
+                                    <p id="range_number">50</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    pick color for:
+                                </td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td>5 points ball</td>
+                                            <td><input type="color" id="5points" class="color" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>15 points ball</td>
+                                            <td><input type="color" id="15points" class="color" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>25 points ball</td>
+                                            <td><input type="color" id="25points" class="color" required></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>maximal time for game<br>(in seconds)</td>
+                                <td><input type="number" min="60" id="gameTime" required></td>
+                            </tr>
+                            <tr>
+                                <td>number of ghosts in the game</td>
+                                <td>
+                                    <select id="num_of_ghosts" required>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </td>
+
+                            </tr>
+                        </table>
+                        <button type="submit">Set and Play!</button>
+                        <button type="button" onclick="setRandom()">random settings</button>
+                        <button type="reset" onclick="resetSettings()">Reset</button>
+                    </form>
+                </div>
+                <div id="game" hidden>
+                        Current User: <label id="current_user"></label>
+                        <br>
+                        SCORE:
+                        <input id="lblScore" type="text" />
+                        TIME:
+                        <input id="lblTime" type="text" /><br>
+                        Lives:
+                        <canvas id="canvas1" height="50" width="600"></canvas>
+                    <canvas id="canvas" height="600" width="600"></canvas>
+                    
+                    <button type="button" onclick="startNewGame()">New Game</button>
+                    <button type="button" onclick="changeSettings()">Change settings</button>
+                </div>
+            </div>
+            <dialog id="About" class="dialog">
+                <!-- <button onclick="closeDialog()">Close dialog</button> -->
+                <span class="close" class="dialog">&times; </span>
+                <p class="dialog">Some text in the Modal..<br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>qewqeqwew
+
+                </p>
+                <!-- <button onclick="closeDialog()">Close dialog</button> -->
+            </dialog>
+        </section>
+
+        <footer id="footer">
+            This web was develepoed in Web development environments course.
+            We used elemnts of html5, css3 and JQuery.<br>
+            you can contact us in the our mail:
+            <a href="mailto:michmich@post.bgu.ac.il">Mail to Michael</a>
+            <a href="mailto:erantag@post.bgu.ac.il">Mail to Eran</a>
+        </footer>
+
+
+    </center>
+
+    <script src="sha256.min.js"></script>
+    <script src="javascript.js"></script>
+</body>
+
+</html>
