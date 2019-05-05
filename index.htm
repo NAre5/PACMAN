@@ -13,17 +13,20 @@
 <body>
     <center>
         <header>
+            <img id="icon" src="imgs/icon.jpg" align="left">
             PACWOMAN
-            <img id="icon" src="icon.png">
-            E T 208278861, M M 318949443 Current User: <label id="current_user"></label>
+            Eran Tagansky 208278861, Michael Michaelshvili 318949443
         </header>
 
         <nav class="menu">
-            <input type="image" alt="Welcome" height="100px" src="imgs/welcome.jpg" onclick="open_tab()" value="Welcome" >
-            <input type="image" alt="Register" height="100px" src="imgs/Register.png" onclick="open_tab()" value="Register" >
-            <input type="image" alt="Login" height="100px" src="imgs/Login.png" onclick="open_tab()" value="Login" >
-            <input type="image" alt="Logout" height="100px" src="imgs/Logout.jpg" onclick="logout()" value="Welcome" >
-            <input type="image" alt="About" height="100px" src="imgs/About.jpg" onclick="showAbout()" value="About" id="about" >
+            <input type="image" alt="Welcome" height="100px" src="imgs/welcome.jpg" onclick="open_tab()"
+                value="Welcome">
+            <input type="image" alt="Register" height="100px" src="imgs/Register.png" onclick="open_tab()"
+                value="Register">
+            <input type="image" alt="Login" height="100px" src="imgs/Login.png" onclick="open_tab()" value="Login">
+            <input type="image" alt="Logout" height="100px" src="imgs/Logout.jpg" onclick="logout()" value="Welcome">
+            <input type="image" alt="About" height="100px" src="imgs/About.jpg" onclick="showAbout()" value="About"
+                id="about">
 
             <!-- <button onclick="open_tab()" value="Register" id="menuB2">Register</button> -->
             <!-- <button onclick="open_tab()" value="Login" id="menuB3">Login</button>
@@ -34,8 +37,10 @@
 
         <section>
             <div id="Welcome">
-                    <input type="image" alt="Register" height="400px" src="imgs/pacman.png" onclick="open_tab()" value="Register" >
-                    <input type="image" alt="Login" height="400px" src="imgs/pacwoman.png" onclick="open_tab()" value="Login" >
+                <input type="image" alt="Register" height="400px" src="imgs/pacman.png" onclick="open_tab()"
+                    value="Register">
+                <input type="image" alt="Login" height="400px" src="imgs/pacwoman.png" onclick="open_tab()"
+                    value="Login">
             </div>
 
             <div id="Register" hidden>
@@ -146,23 +151,27 @@
 
                             </tr>
                         </table>
-                        <button type="submit">Set</button>
+                        <button type="submit">Set and Play!</button>
                         <button type="button" onclick="setRandom()">random settings</button>
                         <button type="reset" onclick="resetSettings()">Reset</button>
                     </form>
                 </div>
                 <div id="game" hidden>
-                    <canvas id="canvas" height="600" width="600" ></canvas>
-                    SCORE:
-                    <input id="lblScore" type="text" />
-                    TIME:
-                    <input id="lblTime" type="text" /><br>
-                    Lives:
-                    <canvas id="canvas1" height="50" width="600"></canvas>
+                        Current User: <label id="current_user"></label>
+                        <br>
+                        SCORE:
+                        <input id="lblScore" type="text" />
+                        TIME:
+                        <input id="lblTime" type="text" /><br>
+                        Lives:
+                        <canvas id="canvas1" height="50" width="600"></canvas>
+                    <canvas id="canvas" height="600" width="600"></canvas>
+                    
                     <button type="button" onclick="startNewGame()">New Game</button>
+                    <button type="button" onclick="changeSettings()">Change settings</button>
                 </div>
             </div>
-            <dialog id="About" class="dialog" >
+            <dialog id="About" class="dialog">
                 <!-- <button onclick="closeDialog()">Close dialog</button> -->
                 <span class="close" class="dialog">&times; </span>
                 <p class="dialog">Some text in the Modal..<br>
@@ -174,14 +183,14 @@
                 </p>
                 <!-- <button onclick="closeDialog()">Close dialog</button> -->
             </dialog>
-            </section>
+        </section>
 
-        <footer id="footer"> 
-            Please don't call us. we are busy.<br>
-            if you want to email someone than: atuda_ac@idf.gov.il
-            
-        <a href="mailto:michmich@post.bgu.ac.il">Mail to Michael</a> 
-        <a href="mailto:erantag@post.bgu.ac.il">Mail to Eran</a> 
+        <footer id="footer">
+            This web was develepoed in Web development environments course.
+            We used elemnts of html5, css3 and JQuery.<br>
+            you can contact us in the our mail:
+            <a href="mailto:michmich@post.bgu.ac.il">Mail to Michael</a>
+            <a href="mailto:erantag@post.bgu.ac.il">Mail to Eran</a>
         </footer>
 
 

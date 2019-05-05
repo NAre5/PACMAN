@@ -1,10 +1,11 @@
 #icon{
-    width: 24px !important;
-    height: 24px !important;
+    width: 70px ;
+    height: 70px ;
 }
 * {
     box-sizing: border-box;
 }
+
 html,body{
     overflow: hidden;
 }
@@ -14,6 +15,9 @@ body{
 
 .menu input{
     margin: 5px;
+}
+.menu input:hover{
+    transform: scale(1.2);
 }
 
 #settingsForm button, #loginForm button, #registerForm button, #game button{
@@ -29,6 +33,15 @@ body{
     -webkit-transition-duration: 0.4s; /* Safari */
     transition-duration: 0.4s;
     cursor: pointer;
+}
+header{
+    position:relative;
+    top:0;
+    width:100%;
+    height:60px;   /* Height of the footer */
+    background: #000000;;
+    color: yellow;
+    font-size: 140%;
 }
 #footer {
     position:absolute;
@@ -98,6 +111,6 @@ body{
   }
 
 
-  body {
+  /* body {
     font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif; 
-  }
+  } */

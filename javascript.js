@@ -10,7 +10,7 @@ var NONE = 4,
     COUNTDOWN = 8,
     EATEN_PAUSE = 9,
     DYING = 10,
-    TIME_TO_START_C=24,
+    TIME_TO_START_C = 24,
     Pacman = {};
 
 var context = canvas.getContext('2d');
@@ -25,9 +25,17 @@ var interval;
 var food_remain;
 var lifes;//3
 var tick = 0;
-var clock_interval;
 var time_to_start;
 var stop_flag = false;
+
+var game_audio = new Audio("audio/opening_song.mp3");
+game_audio.loop = false;
+var eat_audio = new Audio("audio/eating.short.mp3");
+eat_audio.loop = false;
+var bonus__eat_audio = new Audio("audio/eatpill.mp3");
+bonus__eat_audio.loop = false;
+var die_audio = new Audio("audio/die.mp3");
+bonus__eat_audio.loop = false;
 
 var Position = function (i, j) {
     var i = i,
@@ -267,7 +275,7 @@ function Start() {
     lifes = 3;
     eaten50Points = false;
     pressedOnce = false;
-    time_to_start=TIME_TO_START_C;
+    time_to_start = TIME_TO_START_C;
     var num5Point = Math.round(0.6 * food_remain);
     var num15Point = Math.round(0.3 * food_remain);
     var num25Point = food_remain - num5Point - num15Point;
@@ -321,11 +329,6 @@ function Start() {
             }
         }
     }
-    // if (pacman_remain > 0) {
-    //     var emptyCell = findRandomEmptyCell(board);
-    //     board[emptyCell.i][emptyCell.j] = 2;
-    //     pacman_remain--;
-    // }
     while (num5Point > 0) {
         var emptyCell = findRandomEmptyCell(board);
         board[emptyCell.i][emptyCell.j] = 5;
@@ -358,7 +361,7 @@ function Start() {
         randomColor = "#" + ('00000' + (Math.random() * (1 << 24) | 0).toString(16)).slice(-6);
         ghosts.push(new ghost(emptyCell,randomColor));
     }
-    context1.clearRect(0,0,canvas1.width,canvas1.height);
+    context1.clearRect(0, 0, canvas1.width, canvas1.height);
     for (var i = 0; i < lifes; i++) {
         context1.fillStyle = "yellow";
         context1.beginPath();
@@ -366,12 +369,7 @@ function Start() {
         context1.lineTo(250 + 35 * i, 20);
         context1.fill();
     }
-    // while (ghosts_remain > 0) {
-    //     var emptyCell = findRandomEmptyCellForGhost(board);
-    //     board[emptyCell.i][emptyCell.j] = 3;
-    //     ghosts_remain--;
-    //     ghosts.push(new ghost(emptyCell));
-    // }
+
     keysDown = {};
     // addEventListener("keydown", function (e) {
     // }, false);
@@ -392,6 +390,7 @@ function Start() {
     }, false);
     Draw();///////////////
     interval = setInterval(UpdatePosition, 125);
+    game_audio.play();
     // clock_interval = setInterval(drawClock, 125);
 }
 
@@ -413,7 +412,7 @@ function reassemble() {//check
         board[emptyCell.i][emptyCell.j] += 100;
         ghosts[i].position = emptyCell;
     }
-    context1.clearRect(0,0,canvas1.width,canvas1.height);
+    context1.clearRect(0, 0, canvas1.width, canvas1.height);
     for (var i = 0; i < lifes; i++) {
         context1.fillStyle = "yellow";
         context1.beginPath();
@@ -421,9 +420,10 @@ function reassemble() {//check
         context1.lineTo(250 + 35 * i, 20);
         context1.fill();
     }
-    time_to_start=TIME_TO_START_C;
+    time_to_start = TIME_TO_START_C;
     Draw();
     interval = setInterval(UpdatePosition, 125);
+    game_audio.play();
 }
 
 function findRandomEmptyCell(board) {
@@ -441,15 +441,15 @@ function findRandomEmptyCellForGhost(board) {
     var i = shape.i,
         j = shape.j;
     // try {
-    while (board[i][j] == 2)//check
+    while (board[i][j] == 2 || board[i][j] >= 100)//check
     {
         if (Math.random() > 0.5) {
             i = 0;
-            j = Math.floor((Math.random() * 9) + 1);
+            j = 9;
         }
         else {
-            i = Math.floor((Math.random() * 9) + 1);
-            j = 0;
+            i = 9;
+            j = Math.random() < 0.5 ? 0 : 9;
         }
     }
     // }
@@ -457,9 +457,6 @@ function findRandomEmptyCellForGhost(board) {
     return new Position(i, j);
 }
 
-/**
- * @return {number}
- */
 function GetKeyPressed() {
     if (keysDown[controls['up']]) {
         pacman_direction = DIRECTION.UP;
@@ -487,8 +484,8 @@ function Draw() {
     var centerPackmanY;
     var centerX;
     var centerY;
-    var startAngel;
-    var stopAngel;
+    var startAngle;
+    var stopAngle;
     var drawPackman = false;
     for (var i = 0; i < 10; i++) {
         for (var j = 0; j < 10; j++) {
@@ -501,39 +498,39 @@ function Draw() {
                 drawPackman = true;
                 switch (pacman_direction.name) {
                     case "right":
-                        startAngel = 0.15 * Math.PI;
-                        stopAngel = 1.85 * Math.PI;
+                        startAngle = 0.15 * Math.PI;
+                        stopAngle = 1.85 * Math.PI;
                         centerX = center.x + 5;
                         centerY = center.y - 15;
                         break;
                     case "left":
-                        startAngel = 1.15 * Math.PI;
-                        stopAngel = 0.85 * Math.PI;
+                        startAngle = 1.15 * Math.PI;
+                        stopAngle = 0.85 * Math.PI;
                         centerX = center.x;
                         centerY = center.y - 15;
                         break;
                     case "down":
-                        startAngel = 0.65 * Math.PI;
-                        stopAngel = 0.35 * Math.PI;
+                        startAngle = 0.65 * Math.PI;
+                        stopAngle = 0.35 * Math.PI;
                         centerX = center.x + 15;
                         centerY = center.y;
                         break;
                     case "up":
-                        startAngel = 1.65 * Math.PI;
-                        stopAngel = 1.35 * Math.PI;
+                        startAngle = 1.65 * Math.PI;
+                        stopAngle = 1.35 * Math.PI;
                         centerX = center.x + 15;
                         centerY = center.y;
                         break;
                     case "still":
-                        startAngel = 0.15 * Math.PI;
-                        stopAngel = 1.85 * Math.PI;
+                        startAngle = 0.15 * Math.PI;
+                        stopAngle = 1.85 * Math.PI;
                         centerX = center.x + 5;
                         centerY = center.y - 15;
                         break;
 
                 }
                 context.beginPath();
-                context.arc(center.x, center.y, 30, startAngel, stopAngel); // half circle
+                context.arc(center.x, center.y, 30, startAngle, stopAngle); // half circle
                 context.lineTo(center.x, center.y);
                 context.fillStyle = pac_color; //color
                 context.fill();
@@ -591,7 +588,7 @@ function Draw() {
         context.fillStyle = "black"; //color
         context.fill();
         context.beginPath();
-        context.arc(centerPackmanX, centerPackmanY, 30, startAngel, stopAngel); // half circle
+        context.arc(centerPackmanX, centerPackmanY, 30, startAngle, stopAngle); // half circle
         context.lineTo(centerPackmanX, centerPackmanY);
         context.fillStyle = pac_color; //color
         context.fill();
@@ -602,10 +599,10 @@ function Draw() {
         eated = false;
         drawPackman = false;
     }
-    if(time_to_start>0){
+    if (time_to_start > 0) {
         context.fillStyle = "#000";
-        context.font = canvas.height/2*0.15 +"px arial";
-        context.fillText(Math.ceil(time_to_start/8), canvas.width/2,canvas.height/2);
+        context.font = canvas.height / 2 * 0.15 + "px arial";
+        context.fillText(Math.ceil(time_to_start / 8), canvas.width / 2, canvas.height / 2);
     }
 
 }
@@ -617,6 +614,7 @@ function UpdatePosition() {
                 ghosts[i].move();
                 if (board[shape.i][shape.j] >= 100 && DIRECTION.opposite_direction(ghosts[i].direction,pacman_direction)) {//////////
                     stopGame();
+                    die_audio.play();
                     lifes--;
                     if (lifes == 0) {
                         context1.clearRect(0,0,canvas1.width,canvas1.height);
@@ -630,7 +628,7 @@ function UpdatePosition() {
                         Swal.fire({
                             type: 'error',
                             title: "You've been eaten!...",
-                            text: 'nnow you got " + lifes + " more lifes left',
+                            text: 'now you got ' + lifes + ' more lifes left',
                             showCloseButton: true,
                           }).then((result) => {
                             reassemble();
@@ -643,8 +641,6 @@ function UpdatePosition() {
         }
     }
     tick++;
-
-    
 
     board[shape.i][shape.j] -= 2;
     GetKeyPressed();
@@ -676,6 +672,7 @@ function UpdatePosition() {
         Draw();
         stopGame();
         lifes--;
+        die_audio.play();
         if (lifes == 0) {
             context1.clearRect(0,0,canvas1.width,canvas1.height);
             Swal.fire({
@@ -701,21 +698,25 @@ function UpdatePosition() {
     if (board[shape.i][shape.j] === 5) {
         score += 5;
         eated = true;
+        eat_audio.play();
         // board[shape.i][shape.j] -=5;
     }
     else if (board[shape.i][shape.j] === 15) {
         score += 15;
         eated = true;
+        eat_audio.play();
         // board[shape.i][shape.j] -=15;
     }
     else if (board[shape.i][shape.j] === 25) {
         score += 25;
+        eat_audio.play();
         eated = true;
     }
     else if (board[shape.i][shape.j] >= 50 && board[shape.i][shape.j] < 100) {
         score += board[shape.i][shape.j];
         eated = true;
         eaten50Points = true;
+        bonus__eat_audio.play();
         if ((shape.i === bonusX && shape.j === bonusY)) {
             bonusX = 11;
             bonusY = 11;
@@ -782,8 +783,7 @@ function UpdatePosition() {
     } else {
         Draw();
     }
-    if(time_to_start>0)
-    {
+    if (time_to_start > 0) {
         time_to_start--;
     }
 }
@@ -971,8 +971,8 @@ function logout() {
 function stopGame() {
     keysDown ={};
     window.clearInterval(interval);
-    window.clearInterval(clock_interval);
-    //audio.pause();
+    game_audio.pause();
+    game_audio.currentTime = 0;
 }
 
 function resetSettings() {
@@ -1089,84 +1089,84 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke, fillStyle) {
     }
 
 }
-function drawClock() {
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
-    var radius = canvas.height / 2;
-    ctx.translate(radius, radius);
-    radius = radius * 0.90
-    setInterval(drawClock, 1000);
-    drawFace(ctx, radius);
-    drawNumbers(ctx, radius);
-    drawTime(ctx, radius);
-}
+// function drawClock() {
+//     var canvas = document.getElementById("canvas");
+//     var ctx = canvas.getContext("2d");
+//     var radius = canvas.height / 2;
+//     ctx.translate(radius, radius);
+//     radius = radius * 0.90
+//     setInterval(drawClock, 1000);
+//     drawFace(ctx, radius);
+//     drawNumbers(ctx, radius);
+//     drawTime(ctx, radius);
+// }
 
-function drawFace(ctx, radius) {
-    var grad;
-    ctx.beginPath();
-    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-    ctx.fillStyle = 'white';
-    ctx.fill();
-    grad = ctx.createRadialGradient(0, 0, radius * 0.95, 0, 0, radius * 1.05);
-    grad.addColorStop(0, '#333');
-    grad.addColorStop(0.5, 'white');
-    grad.addColorStop(1, '#333');
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = radius * 0.1;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI);
-    ctx.fillStyle = '#333';
-    ctx.fill();
-}
+// function drawFace(ctx, radius) {
+//     var grad;
+//     ctx.beginPath();
+//     ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+//     ctx.fillStyle = 'white';
+//     ctx.fill();
+//     grad = ctx.createRadialGradient(0, 0, radius * 0.95, 0, 0, radius * 1.05);
+//     grad.addColorStop(0, '#333');
+//     grad.addColorStop(0.5, 'white');
+//     grad.addColorStop(1, '#333');
+//     ctx.strokeStyle = grad;
+//     ctx.lineWidth = radius * 0.1;
+//     ctx.stroke();
+//     ctx.beginPath();
+//     ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI);
+//     ctx.fillStyle = '#333';
+//     ctx.fill();
+// }
 
-function drawNumbers(ctx, radius) {
-    var ang;
-    var num;
-    ctx.font = radius * 0.15 + "px arial";
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "center";
-    for (num = 1; num < 13; num++) {
-        ang = num * Math.PI / 6;
-        ctx.rotate(ang);
-        ctx.translate(0, -radius * 0.85);
-        ctx.rotate(-ang);
-        ctx.fillText(num.toString(), 0, 0);
-        ctx.rotate(ang);
-        ctx.translate(0, radius * 0.85);
-        ctx.rotate(-ang);
-    }
-}
+// function drawNumbers(ctx, radius) {
+//     var ang;
+//     var num;
+//     ctx.font = radius * 0.15 + "px arial";
+//     ctx.textBaseline = "middle";
+//     ctx.textAlign = "center";
+//     for (num = 1; num < 13; num++) {
+//         ang = num * Math.PI / 6;
+//         ctx.rotate(ang);
+//         ctx.translate(0, -radius * 0.85);
+//         ctx.rotate(-ang);
+//         ctx.fillText(num.toString(), 0, 0);
+//         ctx.rotate(ang);
+//         ctx.translate(0, radius * 0.85);
+//         ctx.rotate(-ang);
+//     }
+// }
 
-function drawTime(ctx, radius) {
-    var now = new Date();
-    var hour = now.getHours();
-    var minute = now.getMinutes();
-    var second = now.getSeconds();
-    //hour
-    hour = hour % 12;
-    hour = (hour * Math.PI / 6) +
-        (minute * Math.PI / (6 * 60)) +
-        (second * Math.PI / (360 * 60));
-    drawHand(ctx, hour, radius * 0.5, radius * 0.07);
-    //minute
-    minute = (minute * Math.PI / 30) + (second * Math.PI / (30 * 60));
-    drawHand(ctx, minute, radius * 0.8, radius * 0.07);
-    // second
-    second = (second * Math.PI / 30);
-    drawHand(ctx, second, radius * 0.9, radius * 0.02);
-}
+// function drawTime(ctx, radius) {
+//     var now = new Date();
+//     var hour = now.getHours();
+//     var minute = now.getMinutes();
+//     var second = now.getSeconds();
+//     //hour
+//     hour = hour % 12;
+//     hour = (hour * Math.PI / 6) +
+//         (minute * Math.PI / (6 * 60)) +
+//         (second * Math.PI / (360 * 60));
+//     drawHand(ctx, hour, radius * 0.5, radius * 0.07);
+//     //minute
+//     minute = (minute * Math.PI / 30) + (second * Math.PI / (30 * 60));
+//     drawHand(ctx, minute, radius * 0.8, radius * 0.07);
+//     // second
+//     second = (second * Math.PI / 30);
+//     drawHand(ctx, second, radius * 0.9, radius * 0.02);
+// }
 
-function drawHand(ctx, pos, length, width) {
-    ctx.beginPath();
-    ctx.lineWidth = width;
-    ctx.lineCap = "round";
-    ctx.moveTo(0, 0);
-    ctx.rotate(pos);
-    ctx.lineTo(0, -length);
-    ctx.stroke();
-    ctx.rotate(-pos);
-}
+// function drawHand(ctx, pos, length, width) {
+//     ctx.beginPath();
+//     ctx.lineWidth = width;
+//     ctx.lineCap = "round";
+//     ctx.moveTo(0, 0);
+//     ctx.rotate(pos);
+//     ctx.lineTo(0, -length);
+//     ctx.stroke();
+//     ctx.rotate(-pos);
+// }
 
 function showAbout() {
     document.getElementById("About").showModal();
@@ -1191,3 +1191,9 @@ $('#About').click(function (e) {
 //     text: "you've got " + 10 + " points",
 //     showCloseButton: true,
 //   });
+function changeSettings(){
+    stopGame();
+    document.getElementById("settings").hidden = false;
+    document.getElementById("game").hidden = true;
+}
+
