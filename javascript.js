@@ -250,26 +250,27 @@ var currentPage = {
     }
 };
 
-var MyVar = {
-    prop1: "Foo",
-    prop2: "Bar",
-    events: {},
-
-    setProp1: function (prop1) {
-        this.prop1 = prop1;
-        this.notify('prop1', this.prop1);
-    }
-};
-
 document.getElementById("range").oninput = function () {
     document.getElementById("range_number").innerHTML = this.value;
 }
 
+function handlekeyup(){
+    keysDown[event.code] = false;
+}
 
 
-// alert(sha256("message"));
-
-// Start();
+function handlekeydown(){
+    keysDown[event.code] = true;
+    if (lifes > 0 && event.code == "KeyP") {
+        stop_flag = !stop_flag;
+        if (stop_flag) {
+            stopGame();
+        } else {
+            game_audio.play();
+            interval = setInterval(UpdatePosition, 125);
+        }
+    }
+}
 
 function Start() {
     board = new Array();
@@ -378,24 +379,9 @@ function Start() {
     }
 
     keysDown = {};
-    // addEventListener("keydown", function (e) {
-    // }, false);
-    addEventListener("keyup", function (e) {
-        keysDown[e.code] = false;
-    }, false);
 
-    addEventListener("keydown", function (e) {
-        keysDown[e.code] = true;
-        if (lifes>0 && e.code == "KeyP") {
-            stop_flag = !stop_flag;
-            if (stop_flag) {
-                stopGame();
-            } else {
-                game_audio.play();
-                interval = setInterval(UpdatePosition, 125);
-            }
-        }
-    }, false);
+    addEventListener("keyup", handlekeyup, false);
+    addEventListener("keydown", handlekeydown, false);
     Draw();///////////////
     interval = setInterval(UpdatePosition, 125);
     game_audio.play();
@@ -405,6 +391,7 @@ function Start() {
 
 function reassemble() {//check
     // tick=0;
+    score -= 10;
     board[shape.i][shape.j] -= 2;
     for (i = 0, len = ghosts.length; i < len; i += 1) {
         board[ghosts[i].position.i][ghosts[i].position.j] -= 100;
@@ -419,6 +406,7 @@ function reassemble() {//check
         emptyCell = findRandomEmptyCellForGhost(board);
         board[emptyCell.i][emptyCell.j] += 100;
         ghosts[i].position = emptyCell;
+        ghosts[i].direction = DIRECTION.STILL;
     }
     context1.clearRect(0, 0, canvas1.width, canvas1.height);
     for (var i = 0; i < lifes; i++) {
@@ -486,8 +474,8 @@ function GetKeyPressed() {
 
 function Draw() {
     context.clearRect(0, 0, canvas.width, canvas.height); //clean board
-    lblScore.value = score;
-    lblTime.value = Math.ceil(time_elapsed);
+    lblScore.innerHTML = score;
+    lblTime.innerHTML = Math.ceil(time_elapsed);
     var centerPackmanX;
     var centerPackmanY;
     var centerX;
@@ -638,6 +626,7 @@ function UpdatePosition() {
                             title: "You've been eaten!...",
                             text: 'now you got ' + lifes + ' more lifes left',
                             showCloseButton: true,
+                            closelButtonText: 'Continue',
                           }).then((result) => {
                             reassemble();
                           });  
@@ -695,6 +684,7 @@ function UpdatePosition() {
                 title: "You've been eaten!...",
                 text: "now you got " + lifes + " more lifes left",
                 showCloseButton: true,
+                confirmButtonText: 'Continue',
               }).then((result) => {
                 reassemble();
               });
@@ -758,7 +748,7 @@ function UpdatePosition() {
     var currentTime = new Date();
     time_elapsed = gameTime - ((currentTime - start_time) / 1000);
     if (time_elapsed <= 0) {
-        lblTime.value = 0;
+        lblTime.innerHTML = 0;
         stopGame();
         if (score < 150) {
 
@@ -885,9 +875,13 @@ $("#registerForm").submit(function (e) {
             usersDataBase[username] = sha256(password)
             alert("Successful registeration");
             e.preventDefault();
+            document.getElementById("Welcome").hidden=false;
+            currentPage.setPageName("Welcome");
+            document.getElementById("Register").hidden=true;
         }
         else {
             alert("There is a user with this username");
+            e.preventDefault();
         }
     }
 });
@@ -1021,7 +1015,7 @@ function guest_basic() {
     setRandom();
     document.getElementById("settingsForm").submit(new Event());
     currentUser.setUsername("a");
-    currentPage = "Login";
+    currentPage.setPageName("Login");
     document.getElementById("Login").hidden = false;
     document.getElementById("loginForm").hidden = true;
     document.getElementById("game").hidden = false;
@@ -1052,6 +1046,8 @@ function startNewGame() {
     food_remain = food_remain_new;
     gameTime = gameTime_new;
     stopGame();
+    removeEventListener("keydown",handlekeydown);
+    removeEventListener("keyip",handlekeyup);
     Start();
 }
 
@@ -1205,6 +1201,8 @@ window.onclick =function (e) {
 
 function changeSettings(){
     stopGame();
+    removeEventListener("keyup", handlekeyup);
+    removeEventListener("keydown", handlekeydown);
     document.getElementById("settings").hidden = false;
     document.getElementById("game").hidden = true;
 }

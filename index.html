@@ -5,7 +5,7 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="form_style.css">
     <link rel="stylesheet" type="text/css" href="Footer-white.css">
-    <link rel="icon" href="icon.png">
+    <link rel="icon" href="imgs/icon.jpg">
     <script src="sweetalert2@8.js"></script>
 
 </head>
@@ -39,6 +39,7 @@
             <div id="Welcome">
                 <input type="image" alt="Register" height="400px" src="imgs/pacman.png" onclick="open_tab()"
                     value="Register">
+                <img src="imgs/icon.jpg">
                 <input type="image" alt="Login" height="400px" src="imgs/pacwoman.png" onclick="open_tab()"
                     value="Login">
             </div>
@@ -157,16 +158,17 @@
                     </form>
                 </div>
                 <div id="game" hidden>
-                        Current User: <label id="current_user"></label>
-                        <br>
-                        SCORE:
-                        <input id="lblScore" type="text" />
-                        TIME:
-                        <input id="lblTime" type="text" /><br>
-                        Lives:
-                        <canvas id="canvas1" height="50" width="600"></canvas>
+                    <div align="left">Current User: <label id="current_user"></label></div>
+                    <br>
+                    <b>
+                    SCORE:
+                    <label id="lblScore"></label>
+                    TIME:
+                    <label id="lblTime"></label><br>
+                    Lives:</b>
+                    <canvas id="canvas1" height="50" width="600"></canvas>
                     <canvas id="canvas" height="450" width="450"></canvas>
-                    
+
                     <button type="button" onclick="startNewGame()">New Game</button>
                     <button type="button" onclick="changeSettings()">Change settings</button>
                     <button type="button" onclick="setScroll()"><label id="scroll_f"></label> scroll</button>
@@ -179,7 +181,8 @@
                     Our names: Michael Michaelshvili, Eran Tagansky<br>
                     Jquery plugin we used:"sha256.min.js" - we used this plugin to make hash on password<br>
                     "https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"<br>
-                    "https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.js - those plugins are for the valdiation of forms<br>
+                    "https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.js - those plugins
+                    are for the valdiation of forms<br>
                     "sweetalert2@8.js" - we used this plugin to make the beautiful alert.
                     <br>
                     <br>
