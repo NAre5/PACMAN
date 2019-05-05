@@ -29,7 +29,7 @@ var time_to_start;
 var stop_flag = false;
 
 var game_audio = new Audio("audio/opening_song.mp3");
-game_audio.loop = false;
+game_audio.loop = true;
 var eat_audio = new Audio("audio/eating.short.mp3");
 eat_audio.loop = false;
 var bonus__eat_audio = new Audio("audio/eatpill.mp3");
