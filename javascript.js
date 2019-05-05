@@ -37,6 +37,7 @@ bonus__eat_audio.loop = false;
 var die_audio = new Audio("audio/die.mp3");
 bonus__eat_audio.loop = false;
 
+
 var Position = function (i, j) {
     var i = i,
         j = j;
@@ -259,6 +260,8 @@ var MyVar = {
 document.getElementById("range").oninput = function () {
     document.getElementById("range_number").innerHTML = this.value;
 }
+
+
 
 // alert(sha256("message"));
 
@@ -793,6 +796,7 @@ function open_tab() {
     document.getElementById(currentPage.pageName).hidden = true;
     currentPage.setPageName(event.srcElement.value);
     document.getElementById(currentPage.pageName).hidden = false;
+
 }
 
 $(document).ready(function () {
@@ -1197,3 +1201,13 @@ function changeSettings(){
     document.getElementById("game").hidden = true;
 }
 
+var scroll_flag=true;
+
+function setScroll(){
+    // document.getElementsByTagName("html")[0].overflow= scroll_flag?"scroll":"hidden";
+    document.body.style.overflow= scroll_flag?"scroll":"hidden";
+    scroll_flag= !scroll_flag;
+    document.getElementById("scroll_f").innerHTML = (scroll_flag?"dis":"en")+"able";
+
+}
+setScroll();
