@@ -196,7 +196,7 @@ var ghost = function (p,c) {
             try {
                 newPosition = this.position.plus_position(DIRECTION[d].direction);
                 if (newPosition.i >= 0 && newPosition.i < 10 && newPosition.j >= 0 && newPosition.j < 10 &&
-                    board[newPosition.i][newPosition.j] != WALL) {
+                    board[newPosition.i][newPosition.j] != WALL &&board[newPosition.i][newPosition.j]<100) {
                     diff = -shape.distance(this.position.plus_position(DIRECTION[d].direction)) +
                         shape.distance(this.position);
                     if (diff > maxdiff) {
@@ -1148,10 +1148,10 @@ function closeDialog() {
     document.getElementById("About").close();
 }
 
-$('#About').click(function (e) {
-    if (!e.target.classList.contains("dialogComponent"))
+window.onclick =function (e) {
+    if (e.target == document.getElementById("About"))
         document.getElementById("About").close();
-});
+};
 
 
 function changeSettings(){
