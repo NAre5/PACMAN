@@ -29,7 +29,7 @@ var time_to_start;
 var stop_flag = false;
 
 var game_audio = new Audio("audio/opening_song.mp3");
-game_audio.loop = false;
+game_audio.loop = true;
 var eat_audio = new Audio("audio/eating.short.mp3");
 eat_audio.loop = false;
 var bonus__eat_audio = new Audio("audio/eatpill.mp3");
@@ -295,7 +295,7 @@ function Start() {
         board[i] = new Array();
         //put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
         for (var j = 0; j < 10; j++) {
-            if ((i === 3 && j === 3) || (i === 3 && j === 4) || (i === 3 && j === 5) || (i === 6 && j === 1) || (i === 6 && j === 2)) {
+            if ((i === 3 && j === 3) || (i === 3 && j === 4) || (i === 3 && j === 5) || (i === 6 && j === 1) || (i === 6 && j === 2)|| (i === 7 && j === 7)|| (i === 6 && j === 7)) {
                 board[i][j] = 4;
             }
             else if ((i === 0 && j === 0)) {
