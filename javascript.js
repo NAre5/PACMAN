@@ -13,7 +13,9 @@ var NONE = 4,
     TIME_TO_START_C = 24,
     Pacman = {};
 
+
 var context = canvas.getContext('2d');
+var blockSize = canvas.height/10;
 var context1 = canvas1.getContext('2d');
 var shape;// = new Position();
 var board;//0 is nothing, 1 is food, 2 is pacman, 100 is ghost, 5 is 5pointfood, 15 is 15pointfood, 25 is 25pointfood, 50 is 50pointfood
@@ -131,7 +133,6 @@ var ghost = function (p,c) {
         direction = DIRECTION.STILL;//typeof DIRECTION
 
     function draw(ctx) {
-        var blockSize = 60;
 
         var s = blockSize,
             top = (this.position.i) * s,
@@ -387,6 +388,7 @@ function Start() {
             if (stop_flag) {
                 stopGame();
             } else {
+                game_audio.play();
                 interval = setInterval(UpdatePosition, 125);
             }
         }
@@ -493,8 +495,8 @@ function Draw() {
     for (var i = 0; i < 10; i++) {
         for (var j = 0; j < 10; j++) {
             var center = new Object();
-            center.x = j * 60 + 30;
-            center.y = i * 60 + 30;
+            center.x = j * blockSize + blockSize/2;
+            center.y = i * blockSize + blockSize/2;
             if (board[i][j] === 2) {
                 centerPackmanX = center.x;
                 centerPackmanY = center.y;
@@ -503,60 +505,60 @@ function Draw() {
                     case "right":
                         startAngle = 0.15 * Math.PI;
                         stopAngle = 1.85 * Math.PI;
-                        centerX = center.x + 5;
-                        centerY = center.y - 15;
+                        centerX = center.x + blockSize/(60/5);
+                        centerY = center.y - blockSize/(60/15);
                         break;
                     case "left":
                         startAngle = 1.15 * Math.PI;
                         stopAngle = 0.85 * Math.PI;
                         centerX = center.x;
-                        centerY = center.y - 15;
+                        centerY = center.y - blockSize/(60/15);
                         break;
                     case "down":
                         startAngle = 0.65 * Math.PI;
                         stopAngle = 0.35 * Math.PI;
-                        centerX = center.x + 15;
+                        centerX = center.x + blockSize/(60/15);
                         centerY = center.y;
                         break;
                     case "up":
                         startAngle = 1.65 * Math.PI;
                         stopAngle = 1.35 * Math.PI;
-                        centerX = center.x + 15;
+                        centerX = center.x + blockSize/(60/15);
                         centerY = center.y;
                         break;
                     case "still":
                         startAngle = 0.15 * Math.PI;
                         stopAngle = 1.85 * Math.PI;
-                        centerX = center.x + 5;
-                        centerY = center.y - 15;
+                        centerX = center.x + blockSize/(60/5);
+                        centerY = center.y - blockSize/(60/15);
                         break;
 
                 }
                 context.beginPath();
-                context.arc(center.x, center.y, 30, startAngle, stopAngle); // half circle
+                context.arc(center.x, center.y, blockSize/(60/30), startAngle, stopAngle); // half circle
                 context.lineTo(center.x, center.y);
                 context.fillStyle = pac_color; //color
                 context.fill();
                 context.beginPath();
-                context.arc(centerX, centerY, 5, 0, 2 * Math.PI); // circle
+                context.arc(centerX, centerY, blockSize/(60/5), 0, 2 * Math.PI); // circle
                 context.fillStyle = "black"; //color
                 context.fill();
 
 
             } else if (board[i][j] === 5) {
-                roundRect(context, center.x - 8, center.y - 8, 8, 8, 2, true, false, color5points);
+                roundRect(context, center.x - blockSize/(60/8), center.y - blockSize/(60/8), blockSize/(60/8), blockSize/(60/8), blockSize/(60/2), true, false, color5points);
                 // context.beginPath();
                 // context.arc(center.x, center.y, 6, 0, 2 * Math.PI); // circle
                 // context.fillStyle = color5points; //color
                 // context.fill();
             } else if (board[i][j] === 15) {
-                roundRect(context, center.x - 10, center.y - 10, 10, 10, 2, true, false, color15points);
+                roundRect(context, center.x - blockSize/(60/10), center.y - blockSize/(60/10), blockSize/(60/10), blockSize/(60/10), blockSize/(60/2), true, false, color15points);
                 // context.beginPath();
                 // context.arc(center.x, center.y, 10, 0, 2 * Math.PI); // circle
                 // context.fillStyle = color15points; //color
                 // context.fill();
             } else if (board[i][j] === 25) {
-                roundRect(context, center.x - 14, center.y - 14, 14, 14, 2, true, false, color25points);
+                roundRect(context, center.x - blockSize/(60/14), center.y - blockSize/(60/14), blockSize/(60/14), blockSize/(60/14), blockSize/30, true, false, color25points);
                 // context.beginPath();
                 // context.arc(center.x, center.y, 16, 0, 2 * Math.PI); // circle
                 // context.fillStyle = color25points; //color
@@ -564,14 +566,14 @@ function Draw() {
             }
             else if (board[i][j] === 4) {
                 context.beginPath();
-                context.rect(center.x - 30, center.y - 30, 60, 60);
+                context.rect(center.x - blockSize/2, center.y - blockSize/2, blockSize, blockSize);
                 context.fillStyle = "grey"; //color
                 context.fill();
             } else if (board[i][j] >= 50 && board[i][j] < 100) {
-                center.x = center.x - 22;
-                center.y = center.y + 10;
+                center.x = center.x - blockSize/(60/22);
+                center.y = center.y + blockSize/6;
                 context.fillStyle = "gold";//////////////////
-                context.font = "30px Arial";
+                context.font = blockSize/(60/30)+"px Arial";
                 context.fillText("+50", center.x, center.y);
             }
         }
@@ -582,21 +584,21 @@ function Draw() {
     }
     if (eated && drawPackman) {
         context.beginPath();
-        context.arc(centerPackmanX, centerPackmanY, 30, 0 * Math.PI, 2 * Math.PI); // half circle
+        context.arc(centerPackmanX, centerPackmanY, blockSize/(60/30), 0 * Math.PI, 2 * Math.PI); // half circle
         context.lineTo(centerPackmanX, centerPackmanY);
         context.fillStyle = pac_color; //color
         context.fill();
         context.beginPath();
-        context.arc(centerX, centerY, 5, 0, 2 * Math.PI); // circle
+        context.arc(centerX, centerY, blockSize/(60/5), 0, 2 * Math.PI); // circle
         context.fillStyle = "black"; //color
         context.fill();
         context.beginPath();
-        context.arc(centerPackmanX, centerPackmanY, 30, startAngle, stopAngle); // half circle
+        context.arc(centerPackmanX, centerPackmanY, blockSize/(60/30), startAngle, stopAngle); // half circle
         context.lineTo(centerPackmanX, centerPackmanY);
         context.fillStyle = pac_color; //color
         context.fill();
         context.beginPath();
-        context.arc(centerX, centerY, 5, 0, 2 * Math.PI); // circle
+        context.arc(centerX, centerY, blockSize/(60/5), 0, 2 * Math.PI); // circle
         context.fillStyle = "black"; //color
         context.fill();
         eated = false;
