@@ -872,16 +872,16 @@ $("#registerForm").submit(function (e) {
             var password = document.getElementById("passwordID").value;
             usersDataBase[username] = sha256(password)
             Swal.fire("Successful registeration").then((result) => {
-                e.preventDefault();
                 document.getElementById("Welcome").hidden = false;
                 currentPage.setPageName("Welcome");
                 document.getElementById("Register").hidden = true;
             });
+            e.preventDefault();
         }
         else {
-            Swal.fire("There is a user with this username").then((result) => {
+            Swal.fire("There is a user with this username");
                 e.preventDefault();
-            });
+            
         }
     }
 });
