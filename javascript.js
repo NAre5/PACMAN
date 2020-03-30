@@ -230,7 +230,7 @@ var ghost = function(p, c) {
 						maxdiff = diff;
 					}
 				}
-			} catch {}
+			} catch (error) {}
 		}
 		//assumption: wont stuck
 		board[this.position.i][this.position.j] -= 100;
@@ -946,8 +946,8 @@ $("#registerForm").submit(function(e) {
 			usersDataBase[username] = sha256(password);
 			Swal.fire("Successful registeration").then((result) => {
 				document.getElementById("Welcome").hidden = false;
-				currentPage.setPageName("Welcome");
 				document.getElementById("Register").hidden = true;
+				currentPage.setPageName("Welcome");
 			});
 			e.preventDefault();
 		} else {
@@ -965,6 +965,10 @@ function checkLogin() {
 		loginForm.hidden = true;
 		var settings = document.getElementById("settings");
 		settings.hidden = false;
+		var logoutButton = document.getElementById("logoutButton");
+		logoutButton.hidden = false;
+		var registerButton = document.getElementById("registerButton");
+		registerButton.hidden = true;
 		currentUser.setUsername(username);
 	} else {
 		Swal.fire("username or password not exists. Try again");
@@ -1053,6 +1057,10 @@ function logout() {
 	settings.hidden = true;
 	var game = document.getElementById("game");
 	game.hidden = true;
+	var logoutButton = document.getElementById("logoutButton");
+	logoutButton.hidden = true;
+	var registerButton = document.getElementById("registerButton");
+	registerButton.hidden = false;
 	resetSettings();
 	stopGame();
 	open_tab();
